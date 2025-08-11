@@ -5,18 +5,45 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+// Importar módulos do backend
 import authRoutes from './backend/src/routes/auth.js';
 import workoutRoutes from './backend/src/routes/workouts.js';
 import userRoutes from './backend/src/routes/users.js';
 import exerciseRoutes from './backend/src/routes/exercises.js';
 import { errorHandler } from './backend/src/middleware/errorHandler.js';
-import { initializeLocalDB } from './backend/src/services/firebase.js';
+
+// Importar e configurar o banco local
+import fs from 'fs';
+import jwt from 'jsonwebtoken';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuração do ambiente
 dotenv.config();
+
+// Função para inicializar banco local (copiada do firebase.js)
+const DB_FILE = path.join(process.cwd(), 'backend/src/database/db.json');
+const JWT_SECRET = process.env.JWT_SECRET || 'academia-pro-production-secret';
+
+const initializeLocalDB = () => {
+    try {
+        if (!fs.existsSync(DB_FILE)) {
+            const initialData = {
+                users: [],
+                workouts: [],
+                exercises: [],
+                userProfiles: []
+            };
+            fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
+        }
+        console.log('✅ Banco de dados local inicializado com sucesso');
+    } catch (error) {
+        console.error('❌ Erro ao inicializar banco local:', error);
+        throw error;
+    }
+};
 
 // Inicializar banco local
 initializeLocalDB();
