@@ -1,0 +1,120 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Usuário Teste",
+      "email": "teste@academia.com",
+      "password": "$2a$10$example_hashed_password",
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "preferences": {
+        "theme": "light",
+        "language": "pt-BR"
+      }
+    }
+  ],
+  "workouts": [
+    {
+      "id": "1",
+      "userId": "1",
+      "name": "Treino Push - Peito e Tríceps",
+      "description": "Treino focado em músculos de empurrada",
+      "dayOfWeek": "monday",
+      "exercises": [
+        {
+          "id": "1",
+          "name": "Supino Reto com Barra",
+          "muscleGroup": "peitoral",
+          "sets": 4,
+          "reps": "8-12",
+          "weight": "",
+          "notes": "",
+          "completed": false
+        },
+        {
+          "id": "2",
+          "name": "Supino Inclinado com Halteres",
+          "muscleGroup": "peitoral",
+          "sets": 3,
+          "reps": "10-15",
+          "weight": "",
+          "notes": "",
+          "completed": false
+        }
+      ],
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "exercises": [
+    {
+      "id": "1",
+      "name": "Supino Reto com Barra",
+      "muscleGroup": "peitoral",
+      "equipment": "barra",
+      "difficulty": "intermediário",
+      "instructions": [
+        "Deite no banco",
+        "Agarre a barra",
+        "Abaixe controladamente",
+        "Empurre para cima"
+      ],
+      "tips": [
+        "Mantenha os pés no chão",
+        "Controle a descida"
+      ],
+      "variations": [
+        "Supino com halteres",
+        "Supino inclinado"
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Flexão de Braço",
+      "muscleGroup": "peitoral",
+      "equipment": "peso corporal",
+      "difficulty": "iniciante",
+      "instructions": [
+        "Posição de prancha",
+        "Desça o corpo",
+        "Empurre para cima"
+      ],
+      "tips": [
+        "Mantenha o core contraído",
+        "Movimento controlado"
+      ],
+      "variations": [
+        "Flexão inclinada",
+        "Flexão diamante"
+      ]
+    }
+  ],
+  "progress": [
+    {
+      "id": "1",
+      "userId": "1",
+      "exerciseId": "1",
+      "date": "2024-01-01",
+      "weight": 70,
+      "reps": 10,
+      "sets": 4,
+      "notes": "Primeira sessão do ano"
+    }
+  ],
+  "users_demo_user_123_plans": [
+    {
+      "monday": {
+        "muscles": [
+          "Peitoral"
+        ],
+        "exercises": [
+          "Supino Reto com Barra"
+        ],
+        "notes": "",
+        "updatedAt": "2025-08-11T17:37:45.574Z"
+      },
+      "id": "weeklyPlan",
+      "updatedAt": "2025-08-11T17:37:45.574Z",
+      "createdAt": "2025-08-11T17:37:45.574Z"
+    }
+  ]
+}

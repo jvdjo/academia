@@ -1,0 +1,17 @@
+{
+  "name": "academia-pro-frontend",
+  "version": "1.0.0",
+  "description": "Frontend para o Academia Pro - Planejador de Treinos",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server -p 3000 -c-1",
+    "build": "echo 'Build process not needed for vanilla JS'",
+    "start": "npx http-server -p 8080"
+  },
+  "keywords": ["academia", "treino", "fitness", "frontend", "vanilla-js"],
+  "author": "Academia Pro Team",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

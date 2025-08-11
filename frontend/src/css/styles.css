@@ -1,0 +1,85 @@
+/* Custom Styles for Academia Pro */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+.custom-scrollbar::-webkit-scrollbar { 
+    width: 8px; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-track { 
+    background: #1f2937; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb { 
+    background: #4b5563; 
+    border-radius: 4px; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { 
+    background: #6b7280; 
+}
+
+.view { 
+    display: none; 
+}
+
+.view.active { 
+    display: block; 
+}
+
+.loader {
+    border: 4px solid #374151; /* gray-700 */
+    border-top: 4px solid #3b82f6; /* blue-500 */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal-content-view { 
+    display: none; 
+}
+
+.modal-content-view.active { 
+    display: block; 
+}
+
+/* Animações personalizadas */
+.workout-card {
+    transition: all 0.3s ease;
+}
+
+.workout-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para checkboxes personalizados */
+input[type="checkbox"]:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+/* Gradientes personalizados */
+.gradient-bg {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+/* Responsividade aprimorada */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    #workout-modal .bg-gray-800 {
+        margin: 1rem;
+        height: calc(100vh - 2rem);
+    }
+}
