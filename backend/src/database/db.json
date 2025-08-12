@@ -104,17 +104,31 @@
     {
       "monday": {
         "muscles": [
-          "Peitoral"
+          "Peitoral",
+          "Braços"
         ],
         "exercises": [
-          "Supino Reto com Barra"
+          "Supino Reto com Barra",
+          "Rosca Martelo",
+          "Rosca na Polia Baixa"
         ],
         "notes": "",
-        "updatedAt": "2025-08-11T17:37:45.574Z"
+        "updatedAt": "2025-08-12T01:49:23.789Z"
       },
       "id": "weeklyPlan",
-      "updatedAt": "2025-08-11T17:37:45.574Z",
-      "createdAt": "2025-08-11T17:37:45.574Z"
+      "updatedAt": "2025-08-12T01:49:23.789Z",
+      "createdAt": "2025-08-11T17:37:45.574Z",
+      "tuesday": {
+        "muscles": [
+          "Pernas"
+        ],
+        "exercises": [
+          "Agachamento Búlgaro",
+          "Passada (Afundo)"
+        ],
+        "notes": "",
+        "updatedAt": "2025-08-12T01:49:10.635Z"
+      }
     }
   ]
 }
