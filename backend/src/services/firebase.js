@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import jwt from 'jsonwebtoken';
 
-const DB_FILE = path.join(process.cwd(), 'src/database/db.json');
+// Caminho correto para o banco local em produção e desenvolvimento
+const DB_FILE = process.env.DB_PATH || path.join(process.cwd(), 'backend/src/database/db.json');
 const JWT_SECRET = process.env.JWT_SECRET || 'academia-pro-local-secret-key';
 
 // Local database service to replace Firebase
@@ -12,14 +13,27 @@ class LocalDatabase {
     }
 
     ensureDbFile() {
-        if (!fs.existsSync(DB_FILE)) {
-            const initialData = {
-                users: [],
-                workouts: [],
-                exercises: [],
-                userProfiles: []
-            };
-            fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
+        try {
+            // Criar diretório se não existir
+            const dbDir = path.dirname(DB_FILE);
+            if (!fs.existsSync(dbDir)) {
+                fs.mkdirSync(dbDir, { recursive: true });
+            }
+
+            // Criar arquivo se não existir
+            if (!fs.existsSync(DB_FILE)) {
+                const initialData = {
+                    users: [],
+                    workouts: [],
+                    exercises: [],
+                    userProfiles: [],
+                    userWorkouts: []
+                };
+                fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
+                console.log('Banco de dados local criado:', DB_FILE);
+            }
+        } catch (error) {
+            console.error('Erro ao criar banco de dados:', error);
         }
     }
 

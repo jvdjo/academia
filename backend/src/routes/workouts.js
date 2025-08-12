@@ -17,14 +17,10 @@ const workoutSchema = Joi.object({
 router.get('/', authenticateUser, async (req, res) => {
     try {
         const db = getFirestore();
-        const planDoc = await db
-            .collection('users')
-            .doc(req.user.uid)
-            .collection('plans')
-            .doc('weeklyPlan')
-            .get();
+        const userWorkouts = db.collection('userWorkouts').doc(req.user.uid);
+        const workoutDoc = await userWorkouts.get();
 
-        if (!planDoc.exists) {
+        if (!workoutDoc.exists()) {
             return res.json({
                 success: true,
                 data: {},
@@ -34,10 +30,11 @@ router.get('/', authenticateUser, async (req, res) => {
 
         res.json({
             success: true,
-            data: planDoc.data(),
+            data: workoutDoc.data(),
             message: 'Plano semanal encontrado'
         });
     } catch (error) {
+        console.error('Erro ao buscar treinos:', error);
         res.status(500).json({
             success: false,
             error: 'Erro ao buscar plano semanal'
@@ -62,30 +59,40 @@ router.post('/:day', authenticateUser, async (req, res) => {
         }
 
         const db = getFirestore();
-        const planRef = db
-            .collection('users')
-            .doc(req.user.uid)
-            .collection('plans')
-            .doc('weeklyPlan');
+        const userWorkouts = db.collection('userWorkouts').doc(req.user.uid);
+
+        // Buscar plano existente ou criar um novo
+        let currentPlan = {};
+        try {
+            const existingDoc = await userWorkouts.get();
+            if (existingDoc.exists()) {
+                currentPlan = existingDoc.data();
+            }
+        } catch (err) {
+            console.log('Criando novo plano para usuário:', req.user.uid);
+        }
 
         // Atualizar apenas o dia específico
-        await planRef.set({
-            [day]: {
-                muscles: value.muscles,
-                exercises: value.exercises,
-                notes: value.notes || '',
-                updatedAt: new Date()
-            }
-        }, { merge: true });
+        currentPlan[day] = {
+            muscles: value.muscles,
+            exercises: value.exercises,
+            notes: value.notes || '',
+            updatedAt: new Date().toISOString()
+        };
+
+        // Salvar plano atualizado
+        await userWorkouts.set(currentPlan);
 
         res.json({
             success: true,
             message: `Treino de ${day} salvo com sucesso`
         });
     } catch (error) {
+        console.error('Erro ao salvar treino:', error);
         res.status(500).json({
             success: false,
-            error: 'Erro ao salvar treino'
+            error: 'Erro ao salvar treino',
+            details: error.message
         });
     }
 });
@@ -95,18 +102,14 @@ router.delete('/:day', authenticateUser, async (req, res) => {
     try {
         const { day } = req.params;
         const db = getFirestore();
-        const planRef = db
-            .collection('users')
-            .doc(req.user.uid)
-            .collection('plans')
-            .doc('weeklyPlan');
+        const userWorkouts = db.collection('userWorkouts').doc(req.user.uid);
 
-        // Remover o dia específico
-        const planDoc = await planRef.get();
-        if (planDoc.exists) {
+        // Buscar plano atual
+        const planDoc = await userWorkouts.get();
+        if (planDoc.exists()) {
             const currentData = planDoc.data();
             delete currentData[day];
-            await planRef.set(currentData);
+            await userWorkouts.set(currentData);
         }
 
         res.json({
@@ -114,6 +117,7 @@ router.delete('/:day', authenticateUser, async (req, res) => {
             message: `Treino de ${day} removido com sucesso`
         });
     } catch (error) {
+        console.error('Erro ao remover treino:', error);
         res.status(500).json({
             success: false,
             error: 'Erro ao remover treino'
@@ -125,14 +129,10 @@ router.delete('/:day', authenticateUser, async (req, res) => {
 router.get('/stats', authenticateUser, async (req, res) => {
     try {
         const db = getFirestore();
-        const planDoc = await db
-            .collection('users')
-            .doc(req.user.uid)
-            .collection('plans')
-            .doc('weeklyPlan')
-            .get();
+        const userWorkouts = db.collection('userWorkouts').doc(req.user.uid);
+        const planDoc = await userWorkouts.get();
 
-        if (!planDoc.exists) {
+        if (!planDoc.exists()) {
             return res.json({
                 success: true,
                 data: {
@@ -172,6 +172,7 @@ router.get('/stats', authenticateUser, async (req, res) => {
             message: 'Estatísticas calculadas com sucesso'
         });
     } catch (error) {
+        console.error('Erro ao calcular estatísticas:', error);
         res.status(500).json({
             success: false,
             error: 'Erro ao calcular estatísticas'

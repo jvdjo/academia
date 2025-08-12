@@ -10,11 +10,11 @@ router.get('/profile', authenticateUser, async (req, res) => {
         const db = getFirestore();
         const userDoc = await db.collection('users').doc(req.user.uid).get();
 
-        if (!userDoc.exists) {
+        if (!userDoc.exists()) {
             // Criar perfil padrão se não existir
             const defaultProfile = {
                 email: req.user.email,
-                createdAt: new Date(),
+                createdAt: new Date().toISOString(),
                 preferences: {
                     theme: 'dark',
                     notifications: true
@@ -36,6 +36,7 @@ router.get('/profile', authenticateUser, async (req, res) => {
             message: 'Perfil encontrado'
         });
     } catch (error) {
+        console.error('Erro ao buscar perfil:', error);
         res.status(500).json({
             success: false,
             error: 'Erro ao buscar perfil do usuário'
@@ -52,7 +53,7 @@ router.put('/profile', authenticateUser, async (req, res) => {
         const updateData = {
             ...(preferences && { preferences }),
             ...(personalInfo && { personalInfo }),
-            updatedAt: new Date()
+            updatedAt: new Date().toISOString()
         };
 
         await db.collection('users').doc(req.user.uid).update(updateData);
@@ -62,6 +63,7 @@ router.put('/profile', authenticateUser, async (req, res) => {
             message: 'Perfil atualizado com sucesso'
         });
     } catch (error) {
+        console.error('Erro ao atualizar perfil:', error);
         res.status(500).json({
             success: false,
             error: 'Erro ao atualizar perfil'

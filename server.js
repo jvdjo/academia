@@ -24,19 +24,28 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 
 // Função para inicializar banco local (copiada do firebase.js)
-const DB_FILE = path.join(process.cwd(), 'backend/src/database/db.json');
+const DB_FILE = process.env.DB_PATH || path.join(process.cwd(), 'backend/src/database/db.json');
 const JWT_SECRET = process.env.JWT_SECRET || 'academia-pro-production-secret';
 
 const initializeLocalDB = () => {
     try {
+        // Criar diretório se não existir
+        const dbDir = path.dirname(DB_FILE);
+        if (!fs.existsSync(dbDir)) {
+            fs.mkdirSync(dbDir, { recursive: true });
+        }
+
+        // Criar arquivo se não existir
         if (!fs.existsSync(DB_FILE)) {
             const initialData = {
                 users: [],
                 workouts: [],
                 exercises: [],
-                userProfiles: []
+                userProfiles: [],
+                userWorkouts: []
             };
             fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2));
+            console.log('Banco de dados local criado:', DB_FILE);
         }
         console.log('✅ Banco de dados local inicializado com sucesso');
     } catch (error) {
