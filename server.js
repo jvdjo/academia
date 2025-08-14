@@ -105,8 +105,9 @@ app.use('/api/workouts', workoutRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/exercises', exerciseRoutes);
 
-// Servir arquivos estáticos do frontend
-app.use(express.static(path.join(__dirname, 'frontend')));
+// Servir arquivos estáticos do frontend (React build)
+const frontendDist = path.join(__dirname, 'frontend-react', 'dist');
+app.use(express.static(frontendDist));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -120,7 +121,12 @@ app.get('/health', (req, res) => {
 
 // Servir o frontend para todas as rotas não-API
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+    const indexFile = path.join(frontendDist, 'index.html');
+    if (fs.existsSync(indexFile)) {
+        res.sendFile(indexFile);
+    } else {
+        res.status(404).send('Frontend não construído. Execute "npm run build:frontend".');
+    }
 });
 
 // Error handling
