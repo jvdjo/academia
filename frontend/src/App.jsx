@@ -37,6 +37,11 @@ function useAuth() {
 }
 
 function Login({ onLogin, onRegister, loading }) {
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
+  useEffect(()=>{
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  },[theme])
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -47,6 +52,11 @@ function Login({ onLogin, onRegister, loading }) {
   return (
     <div className="container" style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
       <div className="card login">
+        <div className="theme-toggle">
+          <button className="btn secondary" onClick={()=> setTheme(t=> t==='light' ? 'dark' : 'light')}>
+            {theme==='light' ? 'Modo escuro' : 'Modo claro'}
+          </button>
+        </div>
         <h1 style={{ marginTop: 0 }}>Academia Pro</h1>
         <p className="small">Seu planejador de treinos baseado em ciência</p>
         <form onSubmit={submit} className="grid" style={{ gap: 12, margin: '16px 0' }}>
@@ -92,6 +102,12 @@ function Planner({ user, onLogout }) {
   // exerciseList is array of objects: { name: string, sets: [{ reps, weight }] }
   const [exerciseList, setExerciseList] = useState([])
   const [loading, setLoading] = useState(true)
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
+
+  useEffect(()=>{
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  },[theme])
 
   useEffect(() => {
     let mounted = true
@@ -128,6 +144,9 @@ function Planner({ user, onLogout }) {
         <div className="container" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:64 }}>
           <h2>Academia Pro</h2>
           <div style={{ display:'flex', gap: 12, alignItems:'center' }}>
+            <button className="btn secondary" onClick={()=> setTheme(t=> t==='light' ? 'dark' : 'light')}>
+              {theme==='light' ? 'Escuro' : 'Claro'}
+            </button>
             <span className="small">{user?.email}</span>
             <button className="btn secondary" onClick={onLogout}>Sair</button>
           </div>
