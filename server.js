@@ -106,7 +106,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/exercises', exerciseRoutes);
 
 // Servir arquivos estáticos do frontend (React build)
-const frontendDist = path.join(__dirname, 'frontend-react', 'dist');
+const frontendDist = path.join(__dirname, 'frontend', 'dist');
 app.use(express.static(frontendDist));
 
 // Health check
