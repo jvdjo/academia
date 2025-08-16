@@ -101,6 +101,7 @@ function Planner({ user, onLogout }) {
   const [openDay, setOpenDay] = useState(null)
   // exerciseList is array of objects: { name: string, sets: [{ reps, weight }] }
   const [exerciseList, setExerciseList] = useState([])
+  const [focusExercise, setFocusExercise] = useState(null)
   const [loading, setLoading] = useState(true)
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
 
@@ -122,6 +123,8 @@ function Planner({ user, onLogout }) {
 
   const groups = useMemo(() => Object.keys(exerciseData), [])
 
+  const slug = (s='') => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+
   const saveDay = async () => {
     if (!openDay) return
   const muscles = [...new Set(exerciseList.flatMap(ex => Object.keys(exerciseData).filter(g => Object.values(exerciseData[g]).flat().includes(ex.name))))]
@@ -137,6 +140,29 @@ function Planner({ user, onLogout }) {
     const res = await api.workouts.deleteDay(dayKey)
     if (res.success) setPlan(({ [dayKey]: _omit, ...rest }) => rest)
   }
+
+  // When opening the modal with a focused exercise, auto-expand and scroll to it
+  useEffect(() => {
+    if (openDay && focusExercise) {
+      const id = slug(focusExercise)
+      setTimeout(() => {
+        const el = document.querySelector(`[data-ex-id="${id}"]`)
+        if (el) {
+          // Open ancestor <details> and scroll into view
+          let parent = el.closest('details')
+          while (parent) {
+            parent.open = true
+            parent = parent.parentElement && parent.parentElement.closest ? parent.parentElement.closest('details') : null
+          }
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          el.classList.add('pulse-highlight')
+          setTimeout(() => el.classList.remove('pulse-highlight'), 1000)
+        }
+        // Clear focus flag so user can close/toggle freely afterwards
+        setFocusExercise(null)
+      }, 0)
+    }
+  }, [openDay, focusExercise])
 
   return (
     <div>
@@ -176,7 +202,12 @@ function Planner({ user, onLogout }) {
                       const name = typeof ex === 'string' ? ex : ex.name
                       const sets = typeof ex === 'string' ? [] : (ex.sets||[])
                       return (
-                        <div key={i}>
+                        <div key={i} className="exercise-item" onClick={() => {
+                          const normalized = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? ({ name: ex, sets: [] }) : ex)
+                          setOpenDay(day.key)
+                          setExerciseList(normalized)
+                          setFocusExercise(name)
+                        }}>
                           • {name}
                           {sets.length>0 && (
                             <div className="small" style={{ opacity:.85, marginLeft: 8 }}>
@@ -221,11 +252,11 @@ function Planner({ user, onLogout }) {
                         <details key={p}>
                           <summary style={{ cursor:'pointer' }}>{p}</summary>
                           <div style={{ marginTop: 6 }}>
-                            {exerciseData[g][p].map(exName => {
+              {exerciseData[g][p].map(exName => {
                               const idx = exerciseList.findIndex(e => e.name === exName)
                               const checked = idx >= 0
                               return (
-                                <div key={exName} style={{ padding: '4px 0' }}>
+                <div key={exName} data-ex-id={slug(exName)} style={{ padding: '4px 0' }}>
                                   <label style={{ display:'flex', alignItems:'center', gap: 8 }}>
                                     <input type="checkbox" checked={checked} onChange={(e)=>{
                                       setExerciseList(list => {
