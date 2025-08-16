@@ -143,19 +143,19 @@ function Planner({ user, onLogout }) {
               const dayPlan = plan[day.key] || { muscles: [], exercises: [] }
               const hasWorkout = dayPlan.exercises.length > 0
               return (
-                <div key={day.key} className="card">
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                <div key={day.key} className="card day-card">
+                  <div className="day-header">
                     <strong>{day.name}</strong>
                     <div style={{ width: 10, height: 10, borderRadius: 999, background: hasWorkout ? '#22c55e' : '#6b7280' }} />
                   </div>
-                  <div className="small" style={{ margin: '8px 0' }}>
+                  <div className="small day-muscles">
                     {dayPlan.muscles.length ? dayPlan.muscles.join(', ') : 'Descanso'}
                   </div>
-                  <div className="small" style={{ minHeight: 44 }}>
+                  <div className="small day-exercises">
                     {dayPlan.exercises.slice(0,3).map((ex,i)=>(<div key={i}>• {ex}</div>))}
                     {dayPlan.exercises.length > 3 && <div>... e mais {dayPlan.exercises.length-3}</div>}
                   </div>
-                  <div style={{ display:'flex', gap:8 }}>
+                  <div className="day-actions">
                     <button className="btn" onClick={() => { setOpenDay(day.key); setExerciseList(dayPlan.exercises) }}>{hasWorkout ? 'Editar' : 'Montar'}</button>
                     {hasWorkout && <button className="btn secondary" onClick={() => deleteDay(day.key)}>Limpar</button>}
                   </div>
