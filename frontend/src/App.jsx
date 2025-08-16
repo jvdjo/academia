@@ -152,8 +152,7 @@ function Planner({ user, onLogout }) {
                     {dayPlan.muscles.length ? dayPlan.muscles.join(', ') : 'Descanso'}
                   </div>
                   <div className="small day-exercises">
-                    {dayPlan.exercises.slice(0,3).map((ex,i)=>(<div key={i}>• {ex}</div>))}
-                    {dayPlan.exercises.length > 3 && <div>... e mais {dayPlan.exercises.length-3}</div>}
+                    {dayPlan.exercises.map((ex,i)=>(<div key={i}>• {ex}</div>))}
                   </div>
                   <div className="day-actions">
                     <button className="btn" onClick={() => { setOpenDay(day.key); setExerciseList(dayPlan.exercises) }}>{hasWorkout ? 'Editar' : 'Montar'}</button>

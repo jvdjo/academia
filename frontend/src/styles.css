@@ -28,5 +28,9 @@ header{ position:sticky; top:0; background:rgba(17,24,39,.8); backdrop-filter:sa
 .day-card{ display:flex; flex-direction:column; gap:12px; min-height: 220px }
 .day-card .day-header{ display:flex; justify-content:space-between; align-items:center }
 .day-card .day-muscles{ min-height: 20px }
-.day-card .day-exercises{ min-height: 44px }
+.day-card .day-exercises{ min-height: 44px; max-height: 120px; overflow:auto; -webkit-overflow-scrolling: touch; word-break: break-word; padding-right: 2px }
+/* Optional thin scrollbar for WebKit */
+.day-card .day-exercises::-webkit-scrollbar{ width:6px; height:6px }
+.day-card .day-exercises::-webkit-scrollbar-thumb{ background:#374151; border-radius:6px }
+.day-card .day-exercises::-webkit-scrollbar-track{ background:transparent }
 .day-card .day-actions{ margin-top:auto; display:flex; gap:8px; flex-wrap:wrap }
