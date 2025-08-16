@@ -169,7 +169,11 @@ function Planner({ user, onLogout }) {
                     })}
                   </div>
                   <div className="day-actions">
-                    <button className="btn" onClick={() => { setOpenDay(day.key); setExerciseList(dayPlan.exercises) }}>{hasWorkout ? 'Editar' : 'Montar'}</button>
+                    <button className="btn" onClick={() => { 
+                      setOpenDay(day.key); 
+                      const normalized = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? ({ name: ex, sets: [] }) : ex)
+                      setExerciseList(normalized)
+                    }}>{hasWorkout ? 'Editar' : 'Montar'}</button>
                     {hasWorkout && <button className="btn secondary" onClick={() => deleteDay(day.key)}>Limpar</button>}
                   </div>
                 </div>
@@ -255,7 +259,20 @@ function Planner({ user, onLogout }) {
               <div className="small"><strong>Resumo</strong></div>
               <div className="small" style={{ marginTop: 8 }}>{exerciseList.length} exercícios selecionados</div>
               <ul>
-                {exerciseList.map(ex => <li key={ex} className="small">{ex}</li>)}
+                {exerciseList.map((ex, i) => (
+                  <li key={ex.name || i} className="small">
+                    {ex.name}
+                    {ex.sets && ex.sets.length > 0 && (
+                      <span style={{ marginLeft: 6, opacity:.85 }}>
+                        (
+                        {ex.sets.map((s, si) => (
+                          <span key={si}>{si+1}ª: {s.reps}x{s.weight}kg{si<ex.sets.length-1?', ':''}</span>
+                        ))}
+                        )
+                      </span>
+                    )}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
