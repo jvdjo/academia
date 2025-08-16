@@ -1,9 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import jwt from 'jsonwebtoken';
+import { fileURLToPath } from 'url';
+
+// Resolve path relative to this file to avoid depending on process.cwd()
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Caminho correto para o banco local em produção e desenvolvimento
-const DB_FILE = process.env.DB_PATH || path.join(process.cwd(), 'backend/src/database/db.json');
+const DB_FILE = process.env.DB_PATH || path.join(__dirname, '..', 'database', 'db.json');
 const JWT_SECRET = process.env.JWT_SECRET || 'academia-pro-local-secret-key';
 
 // Local database service (substitui uso do serviço externo anterior)

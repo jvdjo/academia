@@ -21,29 +21,38 @@ const PORT = process.env.PORT || 3001;
 
 // Middlewares
 app.use(helmet());
+
+// CORS configuration (dev-friendly)
+const isDev = (process.env.NODE_ENV || 'development') !== 'production';
+const defaultDevOrigins = ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'];
+const envOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : [];
+const allowedOrigins = Array.from(new Set([...envOrigins, ...defaultDevOrigins].filter(Boolean)));
+
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:8080', 'http://127.0.0.1:8080', 'http://172.23.16.1:8080', 'http://192.168.0.144:8080'],
+    origin: (origin, callback) => {
+        // allow requests with no origin (like curl, postman)
+        if (!origin) return callback(null, true);
+        if (isDev) {
+            // in dev allow the whitelist OR any localhost origin
+            if (allowedOrigins.includes(origin) || /^https?:\/\/localhost(:\d+)?$/.test(origin) || /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)) {
+                return callback(null, true);
+            }
+        } else {
+            if (allowedOrigins.includes(origin)) return callback(null, true);
+        }
+        return callback(new Error('CORS policy: Origin not allowed'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Cache-Control']
 }));
+
+// Enable preflight for all routes
+app.options('*', cors());
+
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-
-// Middleware adicional para CORS
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization,Cache-Control,Pragma');
-    
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
-});
 
 // Routes
 app.use('/api/auth', authRoutes);

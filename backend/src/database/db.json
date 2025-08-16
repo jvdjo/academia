@@ -141,20 +141,8 @@
   "userProfiles": [],
   "userWorkouts": [
     {
-      "monday": {
-        "muscles": [
-          "peitoral",
-          "triceps"
-        ],
-        "exercises": [
-          "Supino reto",
-          "Triceps pulley"
-        ],
-        "notes": "Treino de teste",
-        "updatedAt": "2025-08-16T18:24:10.401Z"
-      },
       "id": "demo_user_123",
-      "updatedAt": "2025-08-16T18:24:10.402Z",
+      "updatedAt": "2025-08-16T19:53:40.635Z",
       "createdAt": "2025-08-16T18:24:10.402Z"
     }
   ]
