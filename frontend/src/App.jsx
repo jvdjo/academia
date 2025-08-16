@@ -89,6 +89,7 @@ function Modal({ title, children, onClose, footer }) {
 function Planner({ user, onLogout }) {
   const [plan, setPlan] = useState({})
   const [openDay, setOpenDay] = useState(null)
+  // exerciseList is array of objects: { name: string, sets: [{ reps, weight }] }
   const [exerciseList, setExerciseList] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -107,10 +108,10 @@ function Planner({ user, onLogout }) {
 
   const saveDay = async () => {
     if (!openDay) return
-    const muscles = [...new Set(exerciseList.flatMap(ex => Object.keys(exerciseData).filter(g => Object.values(exerciseData[g]).flat().includes(ex))))]
-    const res = await api.workouts.saveDay(openDay, { muscles, exercises: exerciseList })
+  const muscles = [...new Set(exerciseList.flatMap(ex => Object.keys(exerciseData).filter(g => Object.values(exerciseData[g]).flat().includes(ex.name))))]
+  const res = await api.workouts.saveDay(openDay, { muscles, exercises: exerciseList })
     if (res.success) {
-      setPlan(p => ({ ...p, [openDay]: { muscles, exercises: exerciseList } }))
+  setPlan(p => ({ ...p, [openDay]: { muscles, exercises: exerciseList } }))
       setOpenDay(null)
       setExerciseList([])
     }
@@ -152,7 +153,20 @@ function Planner({ user, onLogout }) {
                     {dayPlan.muscles.length ? dayPlan.muscles.join(', ') : 'Descanso'}
                   </div>
                   <div className="small day-exercises">
-                    {dayPlan.exercises.map((ex,i)=>(<div key={i}>• {ex}</div>))}
+                    {dayPlan.exercises.map((ex,i)=>{
+                      const name = typeof ex === 'string' ? ex : ex.name
+                      const sets = typeof ex === 'string' ? [] : (ex.sets||[])
+                      return (
+                        <div key={i}>
+                          • {name}
+                          {sets.length>0 && (
+                            <div className="small" style={{ opacity:.85, marginLeft: 8 }}>
+                              {sets.map((s,si)=> <span key={si}>{si+1}ª: {s.reps}x{s.weight}kg{si<sets.length-1?', ':''}</span>)}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
                   <div className="day-actions">
                     <button className="btn" onClick={() => { setOpenDay(day.key); setExerciseList(dayPlan.exercises) }}>{hasWorkout ? 'Editar' : 'Montar'}</button>
@@ -172,7 +186,7 @@ function Planner({ user, onLogout }) {
             <button className="btn" onClick={saveDay}>Salvar Treino</button>
           </div>
         }>
-      <div className="grid planner-modal-grid" style={{ gap: 12 }}>
+          <div className="grid planner-modal-grid" style={{ gap: 12 }}>
             <div className="card">
               <div className="small" style={{ marginBottom: 8 }}>Grupos Musculares</div>
               <div className="grid" style={{ gridTemplateColumns:'1fr', gap: 8 }}>
@@ -184,15 +198,49 @@ function Planner({ user, onLogout }) {
                         <details key={p}>
                           <summary style={{ cursor:'pointer' }}>{p}</summary>
                           <div style={{ marginTop: 6 }}>
-                            {exerciseData[g][p].map(ex => {
-                              const checked = exerciseList.includes(ex)
+                            {exerciseData[g][p].map(exName => {
+                              const idx = exerciseList.findIndex(e => e.name === exName)
+                              const checked = idx >= 0
                               return (
-                                <label key={ex} style={{ display:'flex', alignItems:'center', gap: 8, padding: '4px 0' }}>
-                                  <input type="checkbox" checked={checked} onChange={(e)=>{
-                                    setExerciseList(list => e.target.checked ? [...new Set([...list, ex])] : list.filter(i=>i!==ex))
-                                  }} />
-                                  <span className="small">{ex}</span>
-                                </label>
+                                <div key={exName} style={{ padding: '4px 0' }}>
+                                  <label style={{ display:'flex', alignItems:'center', gap: 8 }}>
+                                    <input type="checkbox" checked={checked} onChange={(e)=>{
+                                      setExerciseList(list => {
+                                        if (e.target.checked) {
+                                          if (idx >= 0) return list
+                                          return [...list, { name: exName, sets: [] }]
+                                        } else {
+                                          return list.filter(item => item.name !== exName)
+                                        }
+                                      })
+                                    }} />
+                                    <span className="small">{exName}</span>
+                                  </label>
+                                  {checked && (
+                                    <div className="small" style={{ marginLeft: 24, display:'grid', gap: 6 }}>
+                                      {(exerciseList[idx]?.sets || []).map((s,si)=> (
+                                        <div key={si} style={{ display:'grid', gridTemplateColumns:'1fr 1fr auto', gap:6, alignItems:'center' }}>
+                                          <input type="number" min="0" placeholder="Reps" value={s.reps}
+                                            onChange={e=>{
+                                              const v = Number(e.target.value)
+                                              setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: it.sets.map((ss,k)=> k===si ? { ...ss, reps: v } : ss) } : it))
+                                            }} />
+                                          <input type="number" min="0" placeholder="Kg" value={s.weight}
+                                            onChange={e=>{
+                                              const v = Number(e.target.value)
+                                              setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: it.sets.map((ss,k)=> k===si ? { ...ss, weight: v } : ss) } : it))
+                                            }} />
+                                          <button className="btn secondary" onClick={()=>{
+                                            setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: it.sets.filter((_,k)=>k!==si) } : it))
+                                          }}>Remover</button>
+                                        </div>
+                                      ))}
+                                      <button className="btn" onClick={()=>{
+                                        setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: [...(it.sets||[]), { reps: 0, weight: 0 }] } : it))
+                                      }}>Adicionar série</button>
+                                    </div>
+                                  )}
+                                </div>
                               )
                             })}
                           </div>

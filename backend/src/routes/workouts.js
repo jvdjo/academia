@@ -6,10 +6,21 @@ import { getFirestore } from '../services/localdb.js';
 const router = express.Router();
 
 // Validação dos dados do treino
+const setSchema = Joi.object({
+    reps: Joi.number().integer().min(0).required(),
+    weight: Joi.number().min(0).required()
+});
+
+const exerciseSchema = Joi.object({
+    name: Joi.string().required(),
+    sets: Joi.array().items(setSchema).default([])
+});
+
 const workoutSchema = Joi.object({
     day: Joi.string().valid('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday').required(),
     muscles: Joi.array().items(Joi.string()).required(),
-    exercises: Joi.array().items(Joi.string()).required(),
+    // Accept legacy array of strings or new richer objects with sets
+    exercises: Joi.array().items(Joi.alternatives().try(Joi.string(), exerciseSchema)).required(),
     notes: Joi.string().optional()
 });
 
@@ -73,9 +84,12 @@ router.post('/:day', authenticateUser, async (req, res) => {
         }
 
         // Atualizar apenas o dia específico
+        // Normalize exercises: convert strings to { name, sets: [] }
+        const normalizedExercises = value.exercises.map(ex => typeof ex === 'string' ? { name: ex, sets: [] } : ex);
+
         currentPlan[day] = {
             muscles: value.muscles,
-            exercises: value.exercises,
+            exercises: normalizedExercises,
             notes: value.notes || '',
             updatedAt: new Date().toISOString()
         };
