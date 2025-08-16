@@ -9,6 +9,9 @@
 		"build:frontend": "npm run build --prefix frontend",
 		"build": "npm run build:frontend && echo Build completed",
 		"dev": "node server.js",
+		"dev:api": "npm run dev --prefix backend",
+		"dev:frontend": "npm run dev --prefix frontend",
+		"dev:local": "concurrently -k -n API,WEB -c yellow,cyan \"npm:dev:api\" \"npm:dev:frontend\"",
 		"test": "echo 'Tests not implemented yet'"
 	},
 	"keywords": [
@@ -30,6 +33,9 @@
 		"jsonwebtoken": "^9.0.2",
 		"dotenv": "^16.3.1",
 		"joi": "^17.11.0"
+	},
+	"devDependencies": {
+		"concurrently": "^8.2.2"
 	},
 	"engines": {
 		"node": ">=18.0.0"
