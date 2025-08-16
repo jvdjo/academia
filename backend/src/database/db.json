@@ -142,8 +142,19 @@
   "userWorkouts": [
     {
       "id": "demo_user_123",
-      "updatedAt": "2025-08-16T19:53:40.635Z",
-      "createdAt": "2025-08-16T18:24:10.402Z"
+      "updatedAt": "2025-08-16T21:03:18.152Z",
+      "createdAt": "2025-08-16T18:24:10.402Z",
+      "monday": {
+        "muscles": [
+          "Ombros"
+        ],
+        "exercises": [
+          "Desenvolvimento com Halteres",
+          "Elevação Frontal com Halteres"
+        ],
+        "notes": "",
+        "updatedAt": "2025-08-16T21:03:18.151Z"
+      }
     }
   ]
 }
