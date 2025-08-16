@@ -10,6 +10,13 @@
         "theme": "light",
         "language": "pt-BR"
       }
+    },
+    {
+      "email": "demo@academia.com",
+      "displayName": "Usuário Demo",
+      "createdAt": "2025-08-16T18:24:10.399Z",
+      "id": "demo_user_123",
+      "updatedAt": "2025-08-16T18:24:10.398Z"
     }
   ],
   "workouts": [
@@ -129,6 +136,26 @@
         "notes": "",
         "updatedAt": "2025-08-12T01:49:10.635Z"
       }
+    }
+  ],
+  "userProfiles": [],
+  "userWorkouts": [
+    {
+      "monday": {
+        "muscles": [
+          "peitoral",
+          "triceps"
+        ],
+        "exercises": [
+          "Supino reto",
+          "Triceps pulley"
+        ],
+        "notes": "Treino de teste",
+        "updatedAt": "2025-08-16T18:24:10.401Z"
+      },
+      "id": "demo_user_123",
+      "updatedAt": "2025-08-16T18:24:10.402Z",
+      "createdAt": "2025-08-16T18:24:10.402Z"
     }
   ]
 }
