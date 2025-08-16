@@ -49,8 +49,11 @@ body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto
 @media(min-width:640px){ .grid.week{ grid-template-columns: repeat(2,minmax(0,1fr)); }}
 @media(min-width:768px){ .grid.week{ grid-template-columns: repeat(3,minmax(0,1fr)); }}
 @media(min-width:1200px){ .grid.week{ grid-template-columns: repeat(7,minmax(0,1fr)); }}
-.modal-backdrop{ position:fixed; inset:0; background:var(--backdrop); display:flex; align-items:center; justify-content:center }
-.modal{ background:var(--card-bg); border:1px solid var(--border); border-radius: 12px; width:min(900px,96vw); max-height: 90vh; overflow:auto; padding:1rem; box-shadow: var(--shadow) }
+.modal-backdrop{ position:fixed; inset:0; background:var(--backdrop); display:flex; align-items:center; justify-content:center; padding: 12px }
+.modal{ background:var(--card-bg); border:1px solid var(--border); border-radius: 12px; width:min(900px,96vw); max-height: 90vh; display:flex; flex-direction:column; box-shadow: var(--shadow) }
+.modal-header{ position:sticky; top:0; z-index:1; background:var(--card-bg); border-bottom:1px solid var(--border); padding: 12px 16px; display:flex; align-items:center; justify-content:space-between }
+.modal-body{ padding: 12px 16px; overflow:auto }
+.modal-footer{ position:sticky; bottom:0; background:var(--card-bg); border-top:1px solid var(--border); padding: 12px 16px; display:flex; justify-content:flex-end; gap:8px }
 input,button{ font:inherit }
 input{ background:var(--input-bg); border:1px solid var(--input-border); color:var(--text); border-radius:8px; padding:.6rem .8rem; width:100% }
 header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:saturate(180%) blur(8px); border-bottom:1px solid var(--border); z-index:10 }

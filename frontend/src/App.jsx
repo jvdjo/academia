@@ -85,12 +85,12 @@ function Modal({ title, children, onClose, footer }) {
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div className="modal-header">
           <h2 style={{ margin: 0 }}>{title}</h2>
           <button className="btn secondary" onClick={onClose}>Fechar</button>
         </div>
-        <div style={{ marginTop: 12 }}>{children}</div>
-        {footer && <div style={{ marginTop: 12 }}>{footer}</div>}
+        <div className="modal-body">{children}</div>
+        {footer && <div className="modal-footer">{footer}</div>}
       </div>
     </div>
   )
