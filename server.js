@@ -75,8 +75,26 @@ app.use('/api/users', userRoutes);
 app.use('/api/exercises', exerciseRoutes);
 
 // Servir arquivos estáticos do frontend (React build)
-const frontendDist = path.join(__dirname, 'frontend', 'dist');
-app.use(express.static(frontendDist));
+const resolveFrontendDist = () => {
+    const override = process.env.FRONTEND_DIST_DIR ? path.resolve(process.env.FRONTEND_DIST_DIR) : null;
+    const candidates = [
+        override,
+        path.join(__dirname, 'frontend', 'dist'),
+        path.resolve(process.cwd(), 'frontend', 'dist')
+    ].filter(Boolean);
+    for (const p of candidates) {
+        if (fs.existsSync(p)) return p;
+    }
+    return candidates[0] || path.join(__dirname, 'frontend', 'dist');
+};
+
+const frontendDist = resolveFrontendDist();
+if (fs.existsSync(frontendDist)) {
+    console.log('🗂️ Servindo frontend estático de:', frontendDist);
+    app.use(express.static(frontendDist));
+} else {
+    console.warn('⚠️ Pasta de build do frontend não encontrada:', frontendDist);
+}
 
 // Health check
 app.get('/health', (req, res) => {
@@ -97,6 +115,18 @@ app.get('*', (req, res) => {
         res.status(404).send('Frontend não construído. Execute "npm run build:frontend".');
     }
 });
+
+// Endpoint de debug (opcional)
+if (process.env.NODE_ENV !== 'production') {
+    app.get('/__debug/frontend', (req, res) => {
+        const files = fs.existsSync(frontendDist) ? fs.readdirSync(frontendDist) : [];
+        res.json({
+            frontendDist,
+            exists: fs.existsSync(frontendDist),
+            files
+        });
+    });
+}
 
 // Error handling
 app.use(errorHandler);
