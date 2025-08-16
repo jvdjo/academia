@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 // Configuração do ambiente
 dotenv.config();
 
-// Função para inicializar banco local (copiada do firebase.js)
+// Função para inicializar banco local (interna)
 const DB_FILE = process.env.DB_PATH || path.join(process.cwd(), 'backend/src/database/db.json');
 const JWT_SECRET = process.env.JWT_SECRET || 'academia-pro-production-secret';
 

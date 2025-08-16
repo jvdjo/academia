@@ -1,7 +1,7 @@
 # 🔧 CORREÇÃO DO ERRO 500 - REDEPLOY NECESSÁRIO
 
 ## ❌ **Problema Identificado:**
-O erro 500 "erro ao salvar treino" aconteceu porque ainda havia código do Firebase não migrado para o banco local nos arquivos de rotas.
+O erro 500 "erro ao salvar treino" aconteceu porque ainda havia código do serviço anterior não migrado para o banco local nos arquivos de rotas.
 
 ## ✅ **Correções Aplicadas:**
 
@@ -18,13 +18,8 @@ O erro 500 "erro ao salvar treino" aconteceu porque ainda havia código do Fireb
 - ✅ Corrigido GET /api/users/profile
 - ✅ Corrigido PUT /api/users/profile
 
-### 3. **firebase.js (Banco Local)**
-- ✅ Corrigido caminho do banco: `process.env.DB_PATH || 'backend/src/database/db.json'`
-- ✅ Corrigido `ensureDbFile()` para criar diretórios automaticamente
-- ✅ Adicionada coleção `userWorkouts` no banco inicial
-
-### 4. **server.js (Produção)**
-- ✅ Atualizado com as mesmas correções do firebase.js
+### 3. **server.js (Produção)**
+- ✅ Atualizado com as mesmas correções do serviço anterior
 
 ---
 
@@ -103,7 +98,7 @@ Body: {
 
 ## 📋 **RESUMO DO QUE ESTAVA CAUSANDO O ERRO:**
 
-1. **Linha 64 - workouts.js:** `const db = getFirestore();` estava chamando Firebase
+1. **Linha 64 - workouts.js:** `const db = getFirestore();` estava chamando o serviço anterior
 2. **Linha 69 - workouts.js:** `planRef.set()` tentava usar API do Firestore
 3. **Falta de logs:** Não sabíamos qual era o erro específico
 

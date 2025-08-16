@@ -1,11 +1,11 @@
 # 🏋️‍♂️ Academia Pro - Planejador de Treinos (100% Local)
 
-Um aplicativo web moderno e científico para planejamento de treinos de academia, baseado em evidências e totalmente **gratuito e local** - sem necessidade de Firebase ou serviços pagos!
+Um aplicativo web moderno e científico para planejamento de treinos de academia, baseado em evidências e totalmente **gratuito e local** - sem necessidade de serviços externos pagos!
 
 ## 🌟 Características Principais
 
 - ✅ **100% Local** - Funciona completamente offline
-- ✅ **Sem Firebase** - Usa localStorage e JSON Server (gratuitos)
+- ✅ **Sem serviços externos pagos** - Usa localStorage e JSON local (gratuitos)
 - ✅ **Base científica** - Exercícios organizados por grupos musculares
 - ✅ **Responsivo** - Funciona em desktop e mobile
 - ✅ **Fácil de usar** - Interface intuitiva e moderna
@@ -24,7 +24,6 @@ academia/
 │   │   │   └── styles.css    # Estilos da aplicação
 │   │   └── js/
 │   │       ├── exerciseData.js    # Dados dos exercícios
-│   │       ├── firebase-config.js # Configuração Local (sem Firebase)
 │   │       └── app.js        # Lógica principal
 │   └── package.json          # Dependências do frontend
 │
@@ -152,7 +151,7 @@ Arquivo `backend/src/database/db.json` contém:
 
 ## 🆕 Novidades da Versão Local
 
-- ❌ **Removido Firebase** - Era caro e complexo
+- ❌ **Removido uso de serviço externo** - Simplificado para operação local
 - ✅ **Adicionado localStorage** - Gratuito e simples
 - ✅ **Adicionado JSON Server** - Banco local gratuito
 - ✅ **Interface melhorada** - Mais moderna e rápida
@@ -201,3 +200,38 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 ---
 
 **Desenvolvido com ❤️ para a comunidade fitness brasileira**
+
+# Academia Pro - Local (Guia de Execução)
+
+Este README explica como executar a aplicação localmente sem serviços externos.
+
+## Dependências
+- Node.js 18+
+- npm ou yarn
+
+## Executando o backend
+
+1. Entre na pasta do backend:
+   ```powershell
+   cd backend
+   npm install
+   npm run start
+   ```
+
+2. O backend inicializa um banco de dados local em `backend/src/database/db.json` e expõe as rotas em `http://localhost:3001` por padrão.
+
+## Executando o frontend
+
+1. No diretório raiz, abra `frontend/index.html` diretamente no navegador para a versão estática.
+2. Para desenvolvimento com Vite (se aplicável ao frontend React):
+   ```powershell
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
+## Observações
+- Não é necessário configurar nenhum serviço externo. Todo o armazenamento é feito localmente.
+- As credenciais de produção (JWT_SECRET) devem ser definidas via variáveis de ambiente ao publicar em um serviço como Render.
+
+---

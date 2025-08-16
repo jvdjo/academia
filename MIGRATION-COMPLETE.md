@@ -1,8 +1,15 @@
 # Academia Pro - Arquitetura Local (100% Free)
 
-## ✅ **MIGRAÇÃO COMPLETA - SEM FIREBASE**
+## ✅ **MIGRAÇÃO COMPLETA - 100% LOCAL**
 
-Seu projeto foi completamente migrado de Firebase para uma solução 100% local e gratuita!
+Seu projeto foi completamente migrado de um serviço externo para uma solução 100% local e gratuita!
+
+O backend agora utiliza um banco de dados JSON local (`backend/src/database/db.json`) e a autenticação é feita com JWT local.
+
+Benefícios:
+- ✅ Sem custos extras
+- ✅ Fácil de hospedar (Render, Heroku, etc.)
+- ✅ Arquivos simples de configurar via variáveis de ambiente
 
 ## 🏗️ **Nova Arquitetura**
 
@@ -83,7 +90,7 @@ O arquivo `backend/src/database/db.json` armazena todos os dados:
 
 ## ✨ **Vantagens da Nova Arquitetura**
 
-- ✅ **100% Gratuito** - Sem custos de Firebase
+- ✅ **100% Gratuito** - Sem custos adicionais
 - ✅ **Offline-first** - Funciona sem internet
 - ✅ **Controle total** - Você possui todos os dados
 - ✅ **Fácil deploy** - Qualquer servidor Node.js

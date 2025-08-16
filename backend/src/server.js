@@ -56,7 +56,7 @@ app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'OK',
         timestamp: new Date().toISOString(),
-        service: 'Academia Pro Backend - Local Version (No Firebase)'
+        service: 'Academia Pro Backend - Local Version'
     });
 });
 
@@ -65,7 +65,7 @@ app.get('/', (req, res) => {
     res.json({
         message: 'Academia Pro API - Local Version',
         version: '1.0.0',
-        description: 'Backend local sem Firebase - usando JSON Server e localStorage',
+        description: 'Backend local - usando JSON local e armazenamento local',
         docs: '/api/docs'
     });
 });
@@ -85,7 +85,7 @@ app.use('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Servidor Academia Pro Local rodando na porta ${PORT}`);
     console.log(`📱 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`💾 Versão: SEM Firebase - 100% Local`);
+    console.log(`💾 Versão: 100% Local`);
     console.log(`📍 URL: http://localhost:${PORT}`);
 });
 

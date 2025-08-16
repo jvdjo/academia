@@ -2,7 +2,7 @@
 
 Sistema completo para planejamento de treinos de academia baseado no **Guia Mestre de Hipertrofia**. 
 
-## 🎯 **VERSÃO TOTALMENTE LOCAL - SEM FIREBASE**
+## 🎯 **VERSÃO TOTALMENTE LOCAL - SEM SERVIÇOS EXTERNOS PAGOS**
 
 Esta versão funciona **100% offline e gratuita**, usando:
 - ✅ **localStorage** para persistência de dados no navegador
@@ -21,15 +21,15 @@ academia/
 │   │   └── js/
 │   │       ├── app.js       # App principal (localStorage)
 │   │       ├── exerciseData.js # Base de exercícios
-│   │       └── firebase-config.js # Serviços locais
+│   │       └── local-services.js # Serviços locais
 │   └── index.html           # Página principal
 │
 ├── backend/                  # API local (Node.js + Express)
 │   ├── src/
 │   │   ├── database/db.json # Banco de dados JSON
-│   │   ├── routes/          # APIs locais (sem Firebase)
+│   │   ├── routes/          # APIs locais
 │   │   └── server.js        # Servidor local
-│   └── package.json         # Dependências (sem Firebase)
+│   └── package.json         # Dependências (sem serviços pagos)
 │
 ├── docs/                     # Guias científicos
 └── setup.bat / setup.sh     # Scripts de instalação
@@ -170,8 +170,7 @@ Este projeto está sob a licença MIT. Veja `LICENSE` para mais detalhes.
 
 ## 🔄 Atualizações
 
-- **v1.0.0**: Versão inicial com Firebase
-- **v2.0.0**: **Versão 100% local - sem Firebase** ⭐
+- **v2.0.0**: **Versão 100% local - sem serviços externos pagos** ⭐
 - Banco de dados JSON local
 - localStorage para persistência
 - Remoção de todas as dependências pagas

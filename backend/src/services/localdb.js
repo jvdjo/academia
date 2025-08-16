@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 const DB_FILE = process.env.DB_PATH || path.join(process.cwd(), 'backend/src/database/db.json');
 const JWT_SECRET = process.env.JWT_SECRET || 'academia-pro-local-secret-key';
 
-// Local database service (substitui uso do Firebase original)
+// Local database service (substitui uso do serviço externo anterior)
 class LocalDatabase {
     constructor() {
         this.ensureDbFile();
