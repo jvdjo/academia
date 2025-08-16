@@ -6,7 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "node server.js",
-		"build:frontend": "npm run build --prefix frontend",
+		"build:frontend": "npm --prefix frontend install --production=false && npm --prefix frontend run build",
 		"build": "npm run build:frontend && echo Build completed",
 		"dev": "node server.js",
 		"dev:api": "npm run dev --prefix backend",
