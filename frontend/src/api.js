@@ -11,7 +11,6 @@ export const api = {
   auth: {
   register: (email, password) => fetch(`${baseUrl}/auth/register`, { method:'POST', headers:{ 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password })}).then(r=>r.json()),
   login: (email, password) => fetch(`${baseUrl}/auth/login`, { method:'POST', headers:{ 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password })}).then(r=>r.json()),
-  demo: () => fetch(`${baseUrl}/auth/demo`, { method:'POST', headers:{ 'Content-Type': 'application/json' }}).then(r=>r.json()),
   },
   workouts: {
     get: () => fetch(`${baseUrl}/workouts`, { headers: headers() }).then(r=>r.json()),

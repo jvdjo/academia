@@ -28,25 +28,15 @@ function useAuth() {
       setUser(res.data.user)
     } finally { setLoading(false) }
   }
-  const demo = async () => {
-    setLoading(true)
-    try {
-      const res = await api.auth.demo()
-      if (!res.success) throw new Error(res.error || 'Falha no demo')
-      localStorage.setItem('academia_pro_token', res.data.token)
-      localStorage.setItem('academia_pro_user', JSON.stringify(res.data.user))
-      setUser(res.data.user)
-    } finally { setLoading(false) }
-  }
   const logout = () => {
     localStorage.removeItem('academia_pro_token')
     localStorage.removeItem('academia_pro_user')
     setUser(null)
   }
-  return { user, login, register, demo, logout, loading }
+  return { user, login, register, logout, loading }
 }
 
-function Login({ onLogin, onRegister, onDemo, loading }) {
+function Login({ onLogin, onRegister, loading }) {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -70,7 +60,7 @@ function Login({ onLogin, onRegister, onDemo, loading }) {
           </div>
           <button className="btn" disabled={loading}>{isLogin ? 'Entrar' : 'Cadastrar'}</button>
         </form>
-        <button className="btn secondary" onClick={onDemo} disabled={loading} style={{ width: '100%' }}>Entrar com Demo</button>
+  {/* Demo login removido */}
         <div style={{ marginTop: 12 }}>
           <button className="small" style={{ background:'transparent', border:0, color:'#60a5fa', cursor:'pointer' }} onClick={()=>setIsLogin(v=>!v)}>
             {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entrar'}
@@ -230,6 +220,6 @@ function Planner({ user, onLogout }) {
 
 export default function App() {
   const auth = useAuth()
-  if (!auth.user) return <Login onLogin={auth.login} onRegister={auth.register} onDemo={auth.demo} loading={auth.loading} />
+  if (!auth.user) return <Login onLogin={auth.login} onRegister={auth.register} loading={auth.loading} />
   return <Planner user={auth.user} onLogout={auth.logout} />
 }

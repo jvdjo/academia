@@ -149,41 +149,4 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// POST /api/auth/demo - Demo login (for testing)
-router.post('/demo', async (req, res) => {
-    try {
-        const demoUser = {
-            uid: 'demo_user_123',
-            email: 'demo@academiaapp.com',
-            displayName: 'Usuário Demo',
-            createdAt: new Date().toISOString(),
-            preferences: {
-                theme: 'dark',
-                notifications: true
-            }
-        };
-
-        const token = generateToken({
-            uid: demoUser.uid,
-            email: demoUser.email,
-            displayName: demoUser.displayName
-        });
-
-        res.json({
-            success: true,
-            message: 'Login demo realizado com sucesso',
-            data: {
-                user: demoUser,
-                token
-            }
-        });
-    } catch (error) {
-        console.error('Erro no login demo:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Erro interno do servidor'
-        });
-    }
-});
-
 export default router;
