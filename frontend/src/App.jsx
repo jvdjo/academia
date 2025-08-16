@@ -46,7 +46,7 @@ function Login({ onLogin, onRegister, loading }) {
   }
   return (
     <div className="container" style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
-      <div className="card" style={{ width: 420 }}>
+      <div className="card login">
         <h1 style={{ marginTop: 0 }}>Academia Pro</h1>
         <p className="small">Seu planejador de treinos baseado em ciência</p>
         <form onSubmit={submit} className="grid" style={{ gap: 12, margin: '16px 0' }}>
@@ -166,14 +166,14 @@ function Planner({ user, onLogout }) {
         )}
       </main>
 
-      {openDay && (
+    {openDay && (
         <Modal title={`Treino de ${daysOfWeek.find(d=>d.key===openDay)?.name}`} onClose={()=>setOpenDay(null)} footer={
           <div style={{ display:'flex', justifyContent:'flex-end', gap: 8 }}>
             <button className="btn secondary" onClick={()=>setOpenDay(null)}>Cancelar</button>
             <button className="btn" onClick={saveDay}>Salvar Treino</button>
           </div>
         }>
-          <div className="grid" style={{ gridTemplateColumns:'260px 1fr', gap: 12 }}>
+      <div className="grid planner-modal-grid" style={{ gap: 12 }}>
             <div className="card">
               <div className="small" style={{ marginBottom: 8 }}>Grupos Musculares</div>
               <div className="grid" style={{ gridTemplateColumns:'1fr', gap: 8 }}>
