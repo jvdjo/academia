@@ -1,6 +1,6 @@
 import express from 'express';
 import { authenticateUser } from '../middleware/auth.js';
-import { getFirestore } from '../services/firebase.js';
+import { getFirestore } from '../services/localdb.js';
 
 const router = express.Router();
 

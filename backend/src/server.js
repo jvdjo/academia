@@ -8,7 +8,7 @@ import workoutRoutes from './routes/workouts.js';
 import userRoutes from './routes/users.js';
 import exerciseRoutes from './routes/exercises.js';
 import { errorHandler } from './middleware/errorHandler.js';
-import { initializeLocalDB } from './services/firebase.js';
+import { initializeLocalDB } from './services/localdb.js';
 
 // Configuração do ambiente
 dotenv.config();

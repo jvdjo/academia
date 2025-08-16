@@ -1,4 +1,4 @@
-import { verifyIdToken } from '../services/firebase.js';
+import { verifyIdToken } from '../services/localdb.js';
 
 export const authenticateUser = async (req, res, next) => {
     try {

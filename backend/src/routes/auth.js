@@ -1,7 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import Joi from 'joi';
-import { getFirestore, generateToken } from '../services/firebase.js';
+import { getFirestore, generateToken } from '../services/localdb.js';
 
 const router = express.Router();
 
