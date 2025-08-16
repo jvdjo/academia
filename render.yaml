@@ -12,3 +12,9 @@ services:
         generateValue: true
       - key: FRONTEND_URL
         value: https://academia-pro.onrender.com
+      - key: DB_PATH
+        value: /var/data/db.json
+    disk:
+      name: academia-data
+      mountPath: /var/data
+      sizeGB: 1

@@ -23,8 +23,8 @@ const __dirname = path.dirname(__filename);
 // Configuração do ambiente
 dotenv.config();
 
-// Inicializar banco local (compartilhado com os routers do backend)
-initializeLocalDB();
+// Inicializar banco (JSON local ou Postgres)
+await initializeLocalDB();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

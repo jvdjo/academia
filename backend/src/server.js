@@ -13,8 +13,8 @@ import { initializeLocalDB } from './services/localdb.js';
 // Configuração do ambiente
 dotenv.config();
 
-// Inicializar banco local
-initializeLocalDB();
+// Inicializar banco (JSON local ou Postgres)
+await initializeLocalDB();
 
 const app = express();
 const PORT = process.env.PORT || 3001;

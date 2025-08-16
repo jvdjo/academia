@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 // Caminho correto para o banco local em produção e desenvolvimento
 const DB_FILE = process.env.DB_PATH || path.join(__dirname, '..', 'database', 'db.json');
 const JWT_SECRET = process.env.JWT_SECRET || 'academia-pro-local-secret-key';
+const DATABASE_URL = process.env.DATABASE_URL;
 
 // Local database service (substitui uso do serviço externo anterior)
 class LocalDatabase {
@@ -201,13 +202,177 @@ class LocalDatabase {
 
 let db;
 
-export const initializeLocalDB = () => {
+// Postgres-backed database mimicking the minimal API we use
+class PostgresDatabase {
+    constructor(pool) {
+        this.pool = pool;
+    }
+
+    async ensureTables() {
+        const client = await this.pool.connect();
+        try {
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS users (
+                  id TEXT PRIMARY KEY,
+                  email TEXT UNIQUE NOT NULL,
+                  password TEXT NOT NULL,
+                  display_name TEXT,
+                  preferences JSONB,
+                  personal_info JSONB,
+                  created_at TIMESTAMPTZ DEFAULT NOW(),
+                  updated_at TIMESTAMPTZ DEFAULT NOW()
+                );
+                CREATE TABLE IF NOT EXISTS user_workouts (
+                  uid TEXT PRIMARY KEY,
+                  plan JSONB NOT NULL,
+                  updated_at TIMESTAMPTZ DEFAULT NOW()
+                );
+            `);
+        } finally {
+            client.release();
+        }
+    }
+
+    collection(name) {
+        if (name === 'users') {
+            return {
+                where: (field, operator, value) => ({
+                    get: async () => {
+                        if (operator !== '==') throw new Error('Operador não suportado no Postgres adapter');
+                        const { rows } = await this.pool.query(`SELECT * FROM users WHERE ${field} = $1`, [value]);
+                        const docs = rows.map(r => ({
+                            id: r.id,
+                            data: () => ({
+                                email: r.email,
+                                password: r.password,
+                                displayName: r.display_name,
+                                preferences: r.preferences || {},
+                                personalInfo: r.personal_info,
+                                createdAt: r.created_at?.toISOString?.() || r.created_at,
+                                updatedAt: r.updated_at?.toISOString?.() || r.updated_at
+                            }),
+                            exists: () => true
+                        }));
+                        return { docs };
+                    }
+                }),
+                doc: (id) => ({
+                    get: async () => {
+                        const { rows } = await this.pool.query('SELECT * FROM users WHERE id=$1', [id]);
+                        const r = rows[0];
+                        return {
+                            exists: () => !!r,
+                            id,
+                            data: () => r ? ({
+                                email: r.email,
+                                password: r.password,
+                                displayName: r.display_name,
+                                preferences: r.preferences || {},
+                                personalInfo: r.personal_info,
+                                createdAt: r.created_at?.toISOString?.() || r.created_at,
+                                updatedAt: r.updated_at?.toISOString?.() || r.updated_at
+                            }) : undefined
+                        };
+                    },
+                    set: async (docData) => {
+                        await this.pool.query(`
+                            INSERT INTO users (id, email, password, display_name, preferences, personal_info)
+                            VALUES ($1,$2,$3,$4,$5,$6)
+                            ON CONFLICT (id) DO UPDATE SET
+                              email=EXCLUDED.email,
+                              password=EXCLUDED.password,
+                              display_name=EXCLUDED.display_name,
+                              preferences=EXCLUDED.preferences,
+                              personal_info=EXCLUDED.personal_info,
+                              updated_at=NOW();
+                        `, [
+                            docData.id || id,
+                            docData.email,
+                            docData.password,
+                            docData.displayName,
+                            docData.preferences || {},
+                            docData.personalInfo || null
+                        ]);
+                    },
+                    update: async (updateData) => {
+                        // Build dynamic update for allowed fields
+                        const fields = [];
+                        const values = [];
+                        let idx = 1;
+                        if (updateData.email) { fields.push(`email=$${idx++}`); values.push(updateData.email); }
+                        if (updateData.password) { fields.push(`password=$${idx++}`); values.push(updateData.password); }
+                        if (updateData.displayName) { fields.push(`display_name=$${idx++}`); values.push(updateData.displayName); }
+                        if (updateData.preferences) { fields.push(`preferences=$${idx++}`); values.push(updateData.preferences); }
+                        if (updateData.personalInfo) { fields.push(`personal_info=$${idx++}`); values.push(updateData.personalInfo); }
+                        if (!fields.length) return;
+                        const sql = `UPDATE users SET ${fields.join(', ')}, updated_at=NOW() WHERE id=$${idx}`;
+                        values.push(id);
+                        await this.pool.query(sql, values);
+                    }
+                })
+            };
+        }
+
+        if (name === 'userWorkouts') {
+            return {
+                doc: (uid) => ({
+                    get: async () => {
+                        const { rows } = await this.pool.query('SELECT plan FROM user_workouts WHERE uid=$1', [uid]);
+                        const r = rows[0];
+                        return {
+                            exists: () => !!r,
+                            id: uid,
+                            data: () => r ? r.plan : undefined
+                        };
+                    },
+                    set: async (plan) => {
+                        await this.pool.query(`
+                            INSERT INTO user_workouts (uid, plan, updated_at)
+                            VALUES ($1,$2,NOW())
+                            ON CONFLICT (uid) DO UPDATE SET plan=EXCLUDED.plan, updated_at=NOW();
+                        `, [uid, plan]);
+                    },
+                    update: async (updateData) => {
+                        // merge update: read current plan, shallow merge, set
+                        const { rows } = await this.pool.query('SELECT plan FROM user_workouts WHERE uid=$1', [uid]);
+                        const current = rows[0]?.plan || {};
+                        const next = { ...current, ...updateData };
+                        await this.pool.query(`
+                            INSERT INTO user_workouts (uid, plan, updated_at)
+                            VALUES ($1,$2,NOW())
+                            ON CONFLICT (uid) DO UPDATE SET plan=EXCLUDED.plan, updated_at=NOW();
+                        `, [uid, next]);
+                    }
+                }),
+                get: async () => ({ docs: [] })
+            };
+        }
+
+        // Unsupported collections fallback
+        return {
+            doc: () => ({ get: async () => ({ exists: () => false }), set: async () => {}, update: async () => {} }),
+            where: () => ({ get: async () => ({ docs: [] }) }),
+            get: async () => ({ docs: [] })
+        };
+    }
+}
+
+export const initializeLocalDB = async () => {
     try {
+        if (DATABASE_URL) {
+            const { Pool } = await import('pg');
+            const pool = new Pool({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
+            const pgdb = new PostgresDatabase(pool);
+            await pgdb.ensureTables();
+            db = pgdb;
+            console.log('✅ Banco Postgres inicializado com sucesso');
+            return db;
+        }
         db = new LocalDatabase();
-        console.log('✅ Banco de dados local inicializado com sucesso');
+        console.log('✅ Banco de dados local (JSON) inicializado com sucesso');
         return db;
     } catch (error) {
-        console.error('❌ Erro ao inicializar banco local:', error);
+        console.error('❌ Erro ao inicializar banco:', error);
         throw error;
     }
 };
