@@ -88,7 +88,8 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 
 /* Accordion list (mobile) */
 .accordion-list{ display:grid; gap:.6rem }
-.day-accordion{ background: var(--card-bg); border:1px solid var(--border); border-radius: 10px; overflow:hidden }
+.day-accordion{ background: var(--card-bg); border:1px solid var(--border); border-radius: 10px; overflow:hidden; position: relative }
+.day-accordion[open]{ z-index: 5; box-shadow: var(--shadow); }
 .day-accordion > summary{ list-style:none; display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; cursor:pointer; }
 .day-accordion > summary::-webkit-details-marker{ display:none }
 .day-acc-right{ display:flex; align-items:center; gap:8px }
@@ -120,10 +121,10 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 /* Mobile tweaks */
 @media (max-width: 480px){
 	.container{ padding: .75rem; }
-	header .container{ flex-wrap: wrap; gap:8px; padding-block: 8px; }
+	header .container{ flex-wrap: wrap; gap:6px; padding-block: 6px; }
 	.grid{ gap: .6rem; }
 	.card{ padding: .75rem; border-radius: 10px; }
-	.btn{ padding: .5rem .75rem; font-size: .9rem; }
+	.btn{ padding: .45rem .6rem; font-size: .9rem; }
 	input{ padding: .55rem .7rem; font-size: .95rem; }
 	.small{ font-size: .8rem; }
 	.pill{ padding: 1px 6px; font-size: .7rem; }
@@ -136,4 +137,7 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 	.modal{ width:100vw; height:100vh; max-height: 100vh; border-radius: 0; }
 	.modal-body{ padding: 12px; }
 	.modal-header, .modal-footer{ padding: 10px 12px; }
+	/* Compact header buttons and hide email on very small screens */
+	.icon-btn{ width: 36px; height: 32px; padding: 0; display:inline-flex; align-items:center; justify-content:center; font-size: 16px; }
+	.user-email{ display:none; }
 }

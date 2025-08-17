@@ -107,6 +107,7 @@ function Planner({ user, onLogout }) {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 480px)').matches : false
   )
+  const [openAccordionDay, setOpenAccordionDay] = useState(null)
 
   useEffect(()=>{
     document.documentElement.setAttribute('data-theme', theme)
@@ -185,11 +186,23 @@ function Planner({ user, onLogout }) {
         <div className="container" style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <h2>Academia Pro</h2>
           <div style={{ display:'flex', gap: 12, alignItems:'center' }}>
-            <button className="btn secondary" onClick={()=> setTheme(t=> t==='light' ? 'dark' : 'light')}>
-              {theme==='light' ? 'Escuro' : 'Claro'}
+            <button
+              className={`btn secondary ${isMobile ? 'icon-btn' : ''}`}
+              aria-label="Alternar tema"
+              title="Alternar tema"
+              onClick={()=> setTheme(t=> t==='light' ? 'dark' : 'light')}
+            >
+              {isMobile ? '🌓' : (theme==='light' ? 'Escuro' : 'Claro')}
             </button>
-            <span className="small">{user?.email}</span>
-            <button className="btn secondary" onClick={onLogout}>Sair</button>
+            <span className="small user-email">{user?.email}</span>
+            <button
+              className={`btn secondary ${isMobile ? 'icon-btn' : ''}`}
+              aria-label="Sair"
+              title="Sair"
+              onClick={onLogout}
+            >
+              {isMobile ? '⎋' : 'Sair'}
+            </button>
           </div>
         </div>
       </header>
@@ -205,8 +218,27 @@ function Planner({ user, onLogout }) {
                 const dayPlan = plan[day.key] || { muscles: [], exercises: [] }
                 const hasWorkout = dayPlan.exercises.length > 0
                 return (
-                  <details key={day.key} className="day-accordion">
-                    <summary>
+                  <details
+                    key={day.key}
+                    id={`day-${day.key}`}
+                    className="day-accordion"
+                    open={openAccordionDay === day.key}
+                  >
+                    <summary
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setOpenAccordionDay(prev => {
+                          const next = prev === day.key ? null : day.key
+                          setTimeout(() => {
+                            const el = document.getElementById(`day-${day.key}`)
+                            if (el && next === day.key) {
+                              el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                            }
+                          }, 0)
+                          return next
+                        })
+                      }}
+                    >
                       <span className="day-acc-left"><strong>{day.name}</strong></span>
                       <span className="day-acc-right">
                         <span className="pill">{dayPlan.exercises.length} exer.</span>
