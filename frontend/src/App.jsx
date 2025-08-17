@@ -157,6 +157,54 @@ function Planner({ user, onLogout }) {
     if (res.success) setPlan(({ [dayKey]: _omit, ...rest }) => rest)
   }
 
+  const exportDayToPDF = (dayKey) => {
+    if (!dayKey) return
+    const day = daysOfWeek.find(d => d.key === dayKey)
+    const dayPlan = plan[dayKey] || { muscles: [], exercises: [] }
+    const rows = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? { name: ex, sets: [] } : ex)
+
+    const styles = `
+      body{ font-family: Inter, Arial, Helvetica, sans-serif; color:#111827; padding:20px }
+      h1{ font-size:18px; margin:0 0 8px }
+      .meta{ color:#6b7280; margin-bottom:12px }
+      table{ width:100%; border-collapse:collapse; margin-top:12px }
+      th,td{ border:1px solid #e5e7eb; padding:8px; text-align:left }
+      th{ background:#f3f4f6 }
+    `
+
+    const tableRows = rows.length ? rows.map((r, i) => {
+      const sets = (r.sets || []).map((s,si) => `${si+1}ª: ${s.reps}x${s.weight}kg`).join(' / ') || '-'
+      return `<tr><td>${i+1}</td><td>${r.name}</td><td>${sets}</td></tr>`
+    }).join('\n') : `<tr><td colspan="3" style="text-align:center">Descanso</td></tr>`
+
+    const muscleList = dayPlan.muscles && dayPlan.muscles.length ? dayPlan.muscles.join(', ') : 'Descanso'
+
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Treino - ${day.name}</title><style>${styles}</style></head><body>
+      <h1>Treino - ${day.name}</h1>
+      <div class="meta">Grupos Musculares: ${muscleList} · ${rows.length} exercícios</div>
+      <table>
+        <thead><tr><th>#</th><th>Exercício</th><th>Séries / Repetições (ex.: reps x kg)</th></tr></thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+    </body></html>`
+
+    const w = window.open('', '_blank')
+    if (!w) {
+      alert('Não foi possível abrir a janela para exportar. Verifique se o bloqueador de pop-ups está ativo.')
+      return
+    }
+    w.document.open()
+    w.document.write(html)
+    w.document.close()
+    // Give browser a moment to render before printing
+    setTimeout(() => {
+      w.focus()
+      w.print()
+    }, 300)
+  }
+
   // When opening the modal with a focused exercise, auto-expand and scroll to it
   useEffect(() => {
     if (openDay && focusExercise) {
@@ -292,6 +340,7 @@ function Planner({ user, onLogout }) {
         <Modal title={`Treino de ${daysOfWeek.find(d=>d.key===openDay)?.name}`} onClose={()=>setOpenDay(null)} footer={
           <div style={{ display:'flex', justifyContent:'flex-end', gap: 8 }}>
             <button className="btn secondary" onClick={()=>setOpenDay(null)}>Cancelar</button>
+            <button className="btn secondary" onClick={()=>exportDayToPDF(openDay)}>Exportar PDF</button>
             <button className="btn" onClick={saveDay}>Salvar Treino</button>
           </div>
         }>
