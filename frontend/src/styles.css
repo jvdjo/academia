@@ -40,15 +40,15 @@
 }
 
 body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; background:var(--bg); color:var(--text); }
-.container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+.container { max-width: 1280px; margin: 0 auto; padding: 1rem; }
 .card { background:var(--card-bg); border:1px solid var(--border); border-radius: 12px; padding: 1rem; overflow:hidden; box-shadow: var(--shadow) }
 .btn { background:var(--btn-primary); color:var(--btn-primary-text); border:0; border-radius: 8px; padding: .6rem 1rem; cursor:pointer }
 .btn.secondary { background:var(--btn-secondary); color:var(--btn-secondary-text); border:1px solid var(--border) }
 .grid { display:grid; gap:1rem }
 .grid.week { grid-template-columns: repeat(1,minmax(0,1fr)); }
 @media(min-width:640px){ .grid.week{ grid-template-columns: repeat(2,minmax(0,1fr)); }}
-@media(min-width:768px){ .grid.week{ grid-template-columns: repeat(3,minmax(0,1fr)); }}
-@media(min-width:1200px){ .grid.week{ grid-template-columns: repeat(7,minmax(0,1fr)); }}
+@media(min-width:900px){ .grid.week{ grid-template-columns: repeat(3,minmax(0,1fr)); }}
+@media(min-width:1400px){ .grid.week{ grid-template-columns: repeat(4,minmax(0,1fr)); }}
 .modal-backdrop{ position:fixed; inset:0; background:var(--backdrop); display:flex; align-items:center; justify-content:center; padding: 12px }
 .modal{ background:var(--card-bg); border:1px solid var(--border); border-radius: 12px; width:min(900px,96vw); max-height: 90vh; display:flex; flex-direction:column; box-shadow: var(--shadow) }
 .modal-header{ position:sticky; top:0; z-index:1; background:var(--card-bg); border-bottom:1px solid var(--border); padding: 12px 16px; display:flex; align-items:center; justify-content:space-between }
@@ -66,15 +66,21 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 @media(min-width:900px){ .planner-modal-grid{ grid-template-columns: 260px 1fr } }
 
 /* Day card layout */
-.day-card{ display:flex; flex-direction:column; gap:12px; min-height: 220px }
-.day-card .day-header{ display:flex; justify-content:space-between; align-items:center }
-.day-card .day-muscles{ min-height: 20px }
-.day-card .day-exercises{ min-height: 44px; max-height: 120px; overflow:auto; -webkit-overflow-scrolling: touch; word-break: break-word; padding-right: 2px }
+.day-card{ display:flex; flex-direction:column; gap:12px; min-height: 320px }
+.day-card .day-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px }
+.day-card .day-header strong{ font-size:1.05rem }
+.day-card .day-meta{ display:flex; align-items:center; gap:8px }
+.status-dot{ width: 10px; height: 10px; border-radius: 999px; background:#6b7280 }
+.pill{ padding: 2px 8px; border-radius:999px; background: var(--btn-secondary); color: var(--btn-secondary-text); font-size:.75rem; border:1px solid var(--border) }
+.day-card .day-muscles{ min-height: 28px; display:flex; flex-wrap:wrap; gap:6px }
+.badge{ display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background: rgba(37,99,235,.08); color: var(--text) }
+.day-card .day-exercises{ min-height: 56px; max-height: 200px; overflow:auto; -webkit-overflow-scrolling: touch; word-break: break-word; padding-right: 2px; line-height:1.35 }
 /* Optional thin scrollbar for WebKit */
 .day-card .day-exercises::-webkit-scrollbar{ width:6px; height:6px }
 .day-card .day-exercises::-webkit-scrollbar-thumb{ background:#374151; border-radius:6px }
 .day-card .day-exercises::-webkit-scrollbar-track{ background:transparent }
 .day-card .day-actions{ margin-top:auto; display:flex; gap:8px; flex-wrap:wrap }
+.day-card .day-actions .btn{ flex:1 1 140px }
 
 /* Make exercise list items clickable */
 .day-exercises .exercise-item { cursor: pointer; }
@@ -93,3 +99,6 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 	50% { background-color: rgba(96,165,250,0.35); }
 	100% { background-color: rgba(96,165,250,0.0); }
 }
+
+/* Helpers */
+.muted{ color: var(--muted); }

@@ -192,10 +192,15 @@ function Planner({ user, onLogout }) {
                 <div key={day.key} className="card day-card">
                   <div className="day-header">
                     <strong>{day.name}</strong>
-                    <div style={{ width: 10, height: 10, borderRadius: 999, background: hasWorkout ? '#22c55e' : '#6b7280' }} />
+                    <div className="day-meta">
+                      <span className="pill">{dayPlan.exercises.length} exer.</span>
+                      <div className="status-dot" style={{ background: hasWorkout ? '#22c55e' : '#6b7280' }} />
+                    </div>
                   </div>
                   <div className="small day-muscles">
-                    {dayPlan.muscles.length ? dayPlan.muscles.join(', ') : 'Descanso'}
+                    {dayPlan.muscles.length
+                      ? dayPlan.muscles.map(m => <span key={m} className="badge">{m}</span>)
+                      : <span className="muted">Descanso</span>}
                   </div>
                   <div className="small day-exercises">
                     {dayPlan.exercises.map((ex,i)=>{
