@@ -118,6 +118,13 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 .set-item input{ height: 40px }
 .set-actions{ display:flex; justify-content:flex-end; margin-top:4px }
 
+/* Modal nested indentation for groups/portions/exercises */
+.muscle-group > summary{ padding-left: 4px; }
+.muscle-group .muscle-portion{ margin-left: 14px; border-left: 2px solid var(--border); border-radius: 0 0 0 8px; padding-left: 10px; }
+.muscle-group .muscle-portion > summary{ padding-left: 0; }
+.muscle-group .muscle-portion .exercise-list{ margin-left: 12px; border-left: 1px dashed var(--border); padding-left: 10px; }
+.exercise-row label{ gap: 8px; }
+
 /* Mobile tweaks */
 @media (max-width: 480px){
 	.container{ padding: .75rem; }
@@ -140,4 +147,7 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 	/* Compact header buttons and hide email on very small screens */
 	.icon-btn{ width: 36px; height: 32px; padding: 0; display:inline-flex; align-items:center; justify-content:center; font-size: 16px; }
 	.user-email{ display:none; }
+	/* Tighter indentation on small screens */
+	.muscle-group .muscle-portion{ margin-left: 10px; padding-left: 8px; }
+	.muscle-group .muscle-portion .exercise-list{ margin-left: 8px; padding-left: 8px; }
 }

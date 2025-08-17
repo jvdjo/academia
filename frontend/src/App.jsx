@@ -348,23 +348,23 @@ function Planner({ user, onLogout }) {
             <button className="btn" onClick={saveDay}>Salvar Treino</button>
           </div>
         }>
-          <div className="grid planner-modal-grid" style={{ gap: 12 }}>
+              <div className="grid planner-modal-grid" style={{ gap: 12 }}>
             <div className="card">
               <div className="small" style={{ marginBottom: 8 }}>Grupos Musculares</div>
               <div className="grid" style={{ gridTemplateColumns:'1fr', gap: 8 }}>
                 {groups.map(g => (
-                  <details key={g} className="card">
+                  <details key={g} className="card muscle-group">
                     <summary style={{ cursor:'pointer' }}><strong>{g}</strong></summary>
                     <div className="grid" style={{ marginTop: 8 }}>
                       {Object.keys(exerciseData[g]).map(p => (
-                        <details key={p}>
+                        <details key={p} className="muscle-portion">
                           <summary style={{ cursor:'pointer' }}>{p}</summary>
-                          <div style={{ marginTop: 6 }}>
+                          <div className="exercise-list" style={{ marginTop: 6 }}>
               {exerciseData[g][p].map(exName => {
                               const idx = exerciseList.findIndex(e => e.name === exName)
                               const checked = idx >= 0
                               return (
-                <div key={exName} data-ex-id={slug(exName)} style={{ padding: '4px 0' }}>
+                <div key={exName} data-ex-id={slug(exName)} className="exercise-row" style={{ padding: '4px 0' }}>
                                   <label style={{ display:'flex', alignItems:'center', gap: 8 }}>
                                     <input type="checkbox" checked={checked} onChange={(e)=>{
                                       setExerciseList(list => {
