@@ -20,20 +20,9 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middlewares
-// Use helmet but relax CSP to allow embedding YouTube videos in iframes
+// Disable CSP completely to allow YouTube embeds
 app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.youtube.com', 'https://www.youtube-nocookie.com'],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", 'data:', 'https://i.ytimg.com', 'https://www.youtube.com'],
-            connectSrc: ["'self'"],
-            frameSrc: ['https://www.youtube.com', 'https://www.youtube-nocookie.com'],
-            objectSrc: ["'none'"],
-            baseUri: ["'self'"],
-        }
-    }
+    contentSecurityPolicy: false
 }));
 
 // CORS configuration (dev-friendly)
@@ -67,13 +56,6 @@ app.options('*', cors());
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-
-// Ensure CSP header explicitly includes frame-src for YouTube embeds
-app.use((req, res, next) => {
-    const csp = "default-src 'self' https: 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.youtube.com https://www.youtube-nocookie.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com https://www.youtube.com; connect-src 'self'; frame-src https://www.youtube.com https://www.youtube-nocookie.com; child-src https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'";
-    res.setHeader('Content-Security-Policy', csp);
-    next();
-});
 
 // Routes
 app.use('/api/auth', authRoutes);
