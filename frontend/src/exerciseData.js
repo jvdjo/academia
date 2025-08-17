@@ -142,3 +142,8 @@ export const exerciseData = {
     ]
   }
 }
+
+export const videoLinks = {
+  // Example mapping: exercise name -> youtube url
+  'Rosca Martelo': 'https://www.youtube.com/watch?v=4-dSvYwu9yI'
+}

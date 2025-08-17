@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { api } from './api'
-import { exerciseData, daysOfWeek } from './exerciseData'
+import { exerciseData, daysOfWeek, videoLinks } from './exerciseData'
 
 function useAuth() {
   const [user, setUser] = useState(() => {
@@ -102,6 +102,7 @@ function Planner({ user, onLogout }) {
   // exerciseList is array of objects: { name: string, sets: [{ reps, weight }] }
   const [exerciseList, setExerciseList] = useState([])
   const [focusExercise, setFocusExercise] = useState(null)
+  const [currentVideo, setCurrentVideo] = useState(null)
   const [loading, setLoading] = useState(true)
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
   const [isMobile, setIsMobile] = useState(() =>
@@ -351,6 +352,9 @@ function Planner({ user, onLogout }) {
                             setFocusExercise(name)
                           }}>
                             • {name}
+                            {videoLinks[name] && (
+                              <button className="btn secondary" style={{ marginLeft: 8 }} onClick={(ev)=>{ ev.stopPropagation(); setCurrentVideo(videoLinks[name]) }}>Ver vídeo</button>
+                            )}
                             {sets.length>0 && (
                               <span style={{ opacity:.85, marginLeft: 6 }}>
                                 {sets.map((s,si)=> <span key={si}>{si+1}ª: {s.reps}x{s.weight}kg{si<sets.length-1?', ':''}</span>)}
@@ -414,6 +418,7 @@ function Planner({ user, onLogout }) {
                                     }} />
                                     <span className="small">{exName}</span>
                                   </label>
+                                  {videoLinks[exName] && <button className="btn secondary" style={{ marginLeft: 8 }} onClick={()=> setCurrentVideo(videoLinks[exName])}>Ver vídeo</button>}
                                   {checked && (
                                     <div className="small set-list" style={{ marginLeft: 24 }}>
                                       {(exerciseList[idx]?.sets || []).map((s,si)=> (
@@ -460,6 +465,7 @@ function Planner({ user, onLogout }) {
                 {exerciseList.map((ex, i) => (
                   <li key={ex.name || i} className="small">
                     {ex.name}
+                    {videoLinks[ex.name] && <button className="btn secondary" style={{ marginLeft: 8 }} onClick={()=> setCurrentVideo(videoLinks[ex.name])}>Ver vídeo</button>}
                     {ex.sets && ex.sets.length > 0 && (
                       <span style={{ marginLeft: 6, opacity:.85 }}>
                         (
@@ -474,6 +480,17 @@ function Planner({ user, onLogout }) {
               </ul>
             </div>
           </div>
+          {currentVideo && (
+            <div style={{ marginTop: 12 }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+                <div className="small">Vídeo do exercício</div>
+                <button className="btn secondary" onClick={()=> setCurrentVideo(null)}>Fechar vídeo</button>
+              </div>
+              <div style={{ position:'relative', paddingBottom: '56.25%', height: 0 }}>
+                <iframe src={currentVideo.replace('watch?v=', 'embed/')} title="Vídeo do exercício" style={{ position:'absolute', inset:0, width:'100%', height:'100%', border:0 }} allowFullScreen />
+              </div>
+            </div>
+          )}
         </Modal>
       )}
 
