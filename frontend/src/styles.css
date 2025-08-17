@@ -95,6 +95,11 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 .day-acc-right{ display:flex; align-items:center; gap:8px }
 .day-accordion .accordion-body{ padding: .5rem 1rem 1rem; display:grid; gap:.6rem }
 
+/* Show muscle label inline when details is closed */
+.day-acc-left{ display:flex; align-items:center; gap:8px }
+.muscle-label{ margin-left:8px; font-size:.85rem; color:var(--muted); background: transparent; padding:2px 6px; border-radius:8px }
+.day-accordion:not([open]) .accordion-body{ display:none }
+
 /* Theme toggle (login only) */
 .theme-toggle{ position:fixed; top:10px; right:12px; z-index:1000 }
 
