@@ -20,7 +20,21 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middlewares
-app.use(helmet());
+// Use helmet but relax CSP to allow embedding YouTube videos in iframes
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", 'https://www.youtube.com', 'https://www.youtube-nocookie.com'],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:', 'https://i.ytimg.com', 'https://www.youtube.com'],
+            connectSrc: ["'self'"],
+            frameSrc: ['https://www.youtube.com', 'https://www.youtube-nocookie.com'],
+            objectSrc: ["'none'"],
+            baseUri: ["'self'"],
+        }
+    }
+}));
 
 // CORS configuration (dev-friendly)
 const isDev = (process.env.NODE_ENV || 'development') !== 'production';
