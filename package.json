@@ -13,6 +13,7 @@
 		"dev:api": "npm run dev --prefix backend",
 		"dev:frontend": "npm run dev --prefix frontend",
 		"dev:local": "concurrently -k -n API,WEB -c yellow,cyan \"npm:dev:api\" \"npm:dev:frontend\"",
+		"dev:mobile": "npm --prefix mobile install && npm --prefix mobile start",
 		"test": "echo 'Tests not implemented yet'"
 	},
 	"keywords": [
