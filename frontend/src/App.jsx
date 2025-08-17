@@ -167,7 +167,7 @@ function Planner({ user, onLogout }) {
   return (
     <div>
       <header>
-        <div className="container" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', height:64 }}>
+        <div className="container" style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <h2>Academia Pro</h2>
           <div style={{ display:'flex', gap: 12, alignItems:'center' }}>
             <button className="btn secondary" onClick={()=> setTheme(t=> t==='light' ? 'dark' : 'light')}>

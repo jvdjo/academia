@@ -108,3 +108,19 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 .set-item{ display:grid; gap:6px; padding:10px; border:1px dashed var(--border); border-radius:8px; background: color-mix(in srgb, var(--card-bg) 90%, transparent) }
 .set-item input{ height: 40px }
 .set-actions{ display:flex; justify-content:flex-end; margin-top:4px }
+
+/* Mobile tweaks */
+@media (max-width: 480px){
+	.container{ padding: .75rem; }
+	header .container{ flex-wrap: wrap; gap:8px; padding-block: 8px; }
+	.grid{ gap: .75rem; }
+	.btn{ padding: .75rem 1rem; }
+	input{ padding: .7rem .8rem; }
+	.day-card{ min-height: 300px; }
+	.day-card .day-exercises{ max-height: 160px; }
+	.day-card .day-actions{ flex-direction: column; }
+	.modal-backdrop{ padding: 0; }
+	.modal{ width:100vw; height:100vh; max-height: 100vh; border-radius: 0; }
+	.modal-body{ padding: 12px; }
+	.modal-header, .modal-footer{ padding: 10px 12px; }
+}
