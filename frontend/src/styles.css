@@ -57,7 +57,7 @@ body { margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto
 input,button{ font:inherit }
 input{ background:var(--input-bg); border:1px solid var(--input-border); color:var(--text); border-radius:8px; padding:.6rem .8rem; width:100% }
 header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:saturate(180%) blur(8px); border-bottom:1px solid var(--border); z-index:10 }
-.small{ font-size:.85rem; color:var(--muted) }
+.small{ font-size:.85rem; color:var(--muted); line-height: 1.35 }
 
 /* Responsive helpers */
 .card.login{ width:min(100%, 420px); margin-inline:auto }
@@ -71,9 +71,9 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 .day-card .day-header strong{ font-size:1.05rem }
 .day-card .day-meta{ display:flex; align-items:center; gap:8px }
 .status-dot{ width: 10px; height: 10px; border-radius: 999px; background:#6b7280 }
-.pill{ padding: 2px 8px; border-radius:999px; background: var(--btn-secondary); color: var(--btn-secondary-text); font-size:.75rem; border:1px solid var(--border) }
+.pill{ padding: 2px 8px; border-radius:999px; background: var(--btn-secondary); color: var(--btn-secondary-text); font-size:.75rem; border:1px solid var(--border); display:inline-flex; align-items:center }
 .day-card .day-muscles{ min-height: 28px; display:flex; flex-wrap:wrap; gap:6px }
-.badge{ display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background: rgba(37,99,235,.08); color: var(--text) }
+.badge{ display:inline-flex; align-items:center; padding:2px 8px; border-radius:999px; border:1px solid var(--border); background: rgba(37,99,235,.08); color: var(--text) }
 .day-card .day-exercises{ min-height: 56px; max-height: 200px; overflow:auto; -webkit-overflow-scrolling: touch; word-break: break-word; padding-right: 2px; line-height:1.35 }
 /* Optional thin scrollbar for WebKit */
 .day-card .day-exercises::-webkit-scrollbar{ width:6px; height:6px }
@@ -83,7 +83,7 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 .day-card .day-actions .btn{ flex:1 1 140px }
 
 /* Make exercise list items clickable */
-.day-exercises .exercise-item { cursor: pointer; }
+.day-exercises .exercise-item { cursor: pointer; display:flex; align-items: baseline; gap:6px; }
 .day-exercises .exercise-item:hover { opacity: .9; }
 
 /* Accordion list (mobile) */
@@ -140,6 +140,7 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 	.day-card .day-header strong{ font-size: 1rem; }
 	.day-card .day-exercises{ max-height: 140px; }
 	.day-card .day-actions{ flex-direction: column; }
+	.day-card .day-actions .btn{ width: 100%; flex: 1 0 auto; }
 	.modal-backdrop{ padding: 0; }
 	.modal{ width:100vw; height:100vh; max-height: 100vh; border-radius: 0; }
 	.modal-body{ padding: 12px; }
