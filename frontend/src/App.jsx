@@ -108,6 +108,8 @@ function Planner({ user, onLogout }) {
     typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 480px)').matches : false
   )
   const [openAccordionDay, setOpenAccordionDay] = useState(null)
+  const [exportModalOpen, setExportModalOpen] = useState(false)
+  const [exportSelectedDays, setExportSelectedDays] = useState(() => ({}))
 
   useEffect(()=>{
     document.documentElement.setAttribute('data-theme', theme)
@@ -190,7 +192,7 @@ function Planner({ user, onLogout }) {
       </table>
     </body></html>`
 
-    const w = window.open('', '_blank')
+  const w = window.open('', '_blank')
     if (!w) {
       alert('Não foi possível abrir a janela para exportar. Verifique se o bloqueador de pop-ups está ativo.')
       return
@@ -203,6 +205,43 @@ function Planner({ user, onLogout }) {
       w.focus()
       w.print()
     }, 300)
+  }
+
+  const exportMultipleDaysToPDF = (dayKeys) => {
+    if (!dayKeys || dayKeys.length === 0) return alert('Selecione ao menos um dia para exportar.')
+    const styles = `
+      body{ font-family: Inter, Arial, Helvetica, sans-serif; color:#111827; padding:20px }
+      h1{ font-size:18px; margin:0 0 8px }
+      .meta{ color:#6b7280; margin-bottom:12px }
+      table{ width:100%; border-collapse:collapse; margin-top:12px }
+      th,td{ border:1px solid #e5e7eb; padding:8px; text-align:left }
+      th{ background:#f3f4f6 }
+      .page-break{ page-break-after: always; margin-top: 20px }
+    `
+
+    const sections = dayKeys.map(key => {
+      const day = daysOfWeek.find(d => d.key === key)
+      const dayPlan = plan[key] || { muscles: [], exercises: [] }
+      const rows = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? { name: ex, sets: [] } : ex)
+      const tableRows = rows.length ? rows.map((r, i) => {
+        const sets = (r.sets || []).map((s,si) => `${si+1}ª: ${s.reps}x${s.weight}kg`).join(' / ') || '-'
+        return `<tr><td>${i+1}</td><td>${r.name}</td><td>${sets}</td></tr>`
+      }).join('\n') : `<tr><td colspan="3" style="text-align:center">Descanso</td></tr>`
+      const muscleList = dayPlan.muscles && dayPlan.muscles.length ? dayPlan.muscles.join(', ') : 'Descanso'
+      return `<section><h1>Treino - ${day.name}</h1><div class="meta">Grupos Musculares: ${muscleList} · ${rows.length} exercícios</div><table><thead><tr><th>#</th><th>Exercício</th><th>Séries / Repetições</th></tr></thead><tbody>${tableRows}</tbody></table></section><div class="page-break"></div>`
+    }).join('\n')
+
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>Treinos</title><style>${styles}</style></head><body>${sections}</body></html>`
+
+    const w = window.open('', '_blank')
+    if (!w) {
+      alert('Não foi possível abrir a janela para exportar. Verifique se o bloqueador de pop-ups está ativo.')
+      return
+    }
+    w.document.open()
+    w.document.write(html)
+    w.document.close()
+    setTimeout(() => { w.focus(); w.print() }, 300)
   }
 
   // When opening the modal with a focused exercise, auto-expand and scroll to it
@@ -243,6 +282,7 @@ function Planner({ user, onLogout }) {
               {isMobile ? '🌓' : (theme==='light' ? 'Escuro' : 'Claro')}
             </button>
             <span className="small user-email">{user?.email}</span>
+            <button className={`btn secondary ${isMobile ? 'icon-btn' : ''}`} title="Exportar treinos" onClick={()=> setExportModalOpen(true)}>⇩ PDF</button>
             <button
               className={`btn secondary ${isMobile ? 'icon-btn' : ''}`}
               aria-label="Sair"
@@ -433,6 +473,32 @@ function Planner({ user, onLogout }) {
                 ))}
               </ul>
             </div>
+          </div>
+        </Modal>
+      )}
+
+      {exportModalOpen && (
+        <Modal title={`Exportar treinos`} onClose={()=>setExportModalOpen(false)} footer={
+          <div style={{ display:'flex', justifyContent:'flex-end', gap: 8 }}>
+            <button className="btn secondary" onClick={()=>setExportModalOpen(false)}>Cancelar</button>
+            <button className="btn" onClick={()=>{
+              const keys = Object.keys(exportSelectedDays).filter(k=> exportSelectedDays[k])
+              exportMultipleDaysToPDF(keys)
+              setExportModalOpen(false)
+            }}>Exportar selecionados</button>
+          </div>
+        }>
+          <div className="grid" style={{ gap:8 }}>
+            <div className="small">Selecione os dias que deseja exportar:</div>
+            <div style={{ display:'grid', gap:6 }}>
+              {daysOfWeek.map(d=> (
+                <label key={d.key} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <input type="checkbox" checked={!!exportSelectedDays[d.key]} onChange={(e)=> setExportSelectedDays(s => ({ ...s, [d.key]: e.target.checked }))} />
+                  <span className="small">{d.name}</span>
+                </label>
+              ))}
+            </div>
+            <div className="small muted">Dica: você pode selecionar vários dias para gerar um único PDF com páginas separadas.</div>
           </div>
         </Modal>
       )}
