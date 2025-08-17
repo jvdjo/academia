@@ -123,7 +123,8 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 .muscle-group .muscle-portion{ margin-left: 14px; border-left: 2px solid var(--border); border-radius: 0 0 0 8px; padding-left: 10px; }
 .muscle-group .muscle-portion > summary{ padding-left: 0; }
 .muscle-group .muscle-portion .exercise-list{ margin-left: 12px; border-left: 1px dashed var(--border); padding-left: 10px; }
-.exercise-row label{ gap: 8px; }
+.exercise-row label{ display:grid; grid-template-columns: 20px 1fr; align-items:center; gap: 8px; }
+.exercise-row input[type="checkbox"]{ width: 18px; height: 18px; margin: 0; vertical-align: middle; }
 
 /* Mobile tweaks */
 @media (max-width: 480px){
@@ -151,4 +152,6 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 	/* Tighter indentation on small screens */
 	.muscle-group .muscle-portion{ margin-left: 10px; padding-left: 8px; }
 	.muscle-group .muscle-portion .exercise-list{ margin-left: 8px; padding-left: 8px; }
+	.exercise-row label{ grid-template-columns: 18px 1fr; gap: 8px; }
+	.exercise-row input[type="checkbox"]{ width: 16px; height: 16px; }
 }
