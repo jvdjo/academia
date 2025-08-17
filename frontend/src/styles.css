@@ -102,3 +102,9 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 
 /* Helpers */
 .muted{ color: var(--muted); }
+
+/* Set editor */
+.set-list{ display:grid; gap:10px }
+.set-item{ display:grid; gap:6px; padding:10px; border:1px dashed var(--border); border-radius:8px; background: color-mix(in srgb, var(--card-bg) 90%, transparent) }
+.set-item input{ height: 40px }
+.set-actions{ display:flex; justify-content:flex-end; margin-top:4px }

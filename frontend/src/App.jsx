@@ -276,22 +276,26 @@ function Planner({ user, onLogout }) {
                                     <span className="small">{exName}</span>
                                   </label>
                                   {checked && (
-                                    <div className="small" style={{ marginLeft: 24, display:'grid', gap: 6 }}>
+                                    <div className="small set-list" style={{ marginLeft: 24 }}>
                                       {(exerciseList[idx]?.sets || []).map((s,si)=> (
-                                        <div key={si} style={{ display:'grid', gridTemplateColumns:'1fr 1fr auto', gap:6, alignItems:'center' }}>
-                                          <input type="number" min="0" placeholder="Reps" value={s.reps}
+                                        <div key={si} className="set-item">
+                                          <label className="small" htmlFor={`reps-${idx}-${si}`}>Repetições</label>
+                                          <input id={`reps-${idx}-${si}`} type="number" min="0" inputMode="numeric" placeholder="Ex.: 8" value={s.reps}
                                             onChange={e=>{
                                               const v = Number(e.target.value)
                                               setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: it.sets.map((ss,k)=> k===si ? { ...ss, reps: v } : ss) } : it))
                                             }} />
-                                          <input type="number" min="0" placeholder="Kg" value={s.weight}
+                                          <label className="small" htmlFor={`weight-${idx}-${si}`} style={{ marginTop: 6 }}>Carga (kg)</label>
+                                          <input id={`weight-${idx}-${si}`} type="number" min="0" step="0.5" inputMode="decimal" placeholder="Ex.: 20" value={s.weight}
                                             onChange={e=>{
                                               const v = Number(e.target.value)
                                               setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: it.sets.map((ss,k)=> k===si ? { ...ss, weight: v } : ss) } : it))
                                             }} />
-                                          <button className="btn secondary" onClick={()=>{
-                                            setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: it.sets.filter((_,k)=>k!==si) } : it))
-                                          }}>Remover</button>
+                                          <div className="set-actions">
+                                            <button className="btn secondary" onClick={()=>{
+                                              setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: it.sets.filter((_,k)=>k!==si) } : it))
+                                            }}>Remover</button>
+                                          </div>
                                         </div>
                                       ))}
                                       <button className="btn" onClick={()=>{
