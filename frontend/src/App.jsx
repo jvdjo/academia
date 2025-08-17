@@ -104,6 +104,9 @@ function Planner({ user, onLogout }) {
   const [focusExercise, setFocusExercise] = useState(null)
   const [loading, setLoading] = useState(true)
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(max-width: 480px)').matches : false
+  )
 
   useEffect(()=>{
     document.documentElement.setAttribute('data-theme', theme)
@@ -119,6 +122,18 @@ function Planner({ user, onLogout }) {
       }
     })
     return () => { mounted = false }
+  }, [])
+
+  // Track viewport to switch between grid and accordion on small screens
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return
+    const mql = window.matchMedia('(max-width: 480px)')
+    const handler = (e) => setIsMobile(e.matches)
+    mql.addEventListener ? mql.addEventListener('change', handler) : mql.addListener(handler)
+    setIsMobile(mql.matches)
+    return () => {
+      mql.removeEventListener ? mql.removeEventListener('change', handler) : mql.removeListener(handler)
+    }
   }, [])
 
   const groups = useMemo(() => Object.keys(exerciseData), [])
@@ -184,57 +199,113 @@ function Planner({ user, onLogout }) {
           <p className="small">Baseado no Guia Mestre de Hipertrofia</p>
         </div>
         {loading ? <p>Carregando...</p> : (
-          <div className="grid week">
-            {daysOfWeek.map(day => {
-              const dayPlan = plan[day.key] || { muscles: [], exercises: [] }
-              const hasWorkout = dayPlan.exercises.length > 0
-              return (
-                <div key={day.key} className="card day-card">
-                  <div className="day-header">
-                    <strong>{day.name}</strong>
-                    <div className="day-meta">
-                      <span className="pill">{dayPlan.exercises.length} exer.</span>
-                      <div className="status-dot" style={{ background: hasWorkout ? '#22c55e' : '#6b7280' }} />
+          isMobile ? (
+            <div className="accordion-list">
+              {daysOfWeek.map(day => {
+                const dayPlan = plan[day.key] || { muscles: [], exercises: [] }
+                const hasWorkout = dayPlan.exercises.length > 0
+                return (
+                  <details key={day.key} className="day-accordion">
+                    <summary>
+                      <span className="day-acc-left"><strong>{day.name}</strong></span>
+                      <span className="day-acc-right">
+                        <span className="pill">{dayPlan.exercises.length} exer.</span>
+                        <span className="status-dot" style={{ background: hasWorkout ? '#22c55e' : '#6b7280' }} />
+                      </span>
+                    </summary>
+                    <div className="accordion-body">
+                      <div className="small day-muscles">
+                        {dayPlan.muscles.length
+                          ? dayPlan.muscles.map(m => <span key={m} className="badge">{m}</span>)
+                          : <span className="muted">Descanso</span>}
+                      </div>
+                      <div className="small day-exercises">
+                        {dayPlan.exercises.map((ex,i)=>{
+                          const name = typeof ex === 'string' ? ex : ex.name
+                          const sets = typeof ex === 'string' ? [] : (ex.sets||[])
+                          return (
+                            <div key={i} className="exercise-item" onClick={() => {
+                              const normalized = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? ({ name: ex, sets: [] }) : ex)
+                              setOpenDay(day.key)
+                              setExerciseList(normalized)
+                              setFocusExercise(name)
+                            }}>
+                              • {name}
+                              {sets.length>0 && (
+                                <span style={{ opacity:.85, marginLeft: 6 }}>
+                                  {sets.map((s,si)=> <span key={si}>{si+1}ª: {s.reps}x{s.weight}kg{si<sets.length-1?', ':''}</span>)}
+                                </span>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                      <div className="day-actions">
+                        <button className="btn" onClick={() => {
+                          setOpenDay(day.key);
+                          const normalized = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? ({ name: ex, sets: [] }) : ex)
+                          setExerciseList(normalized)
+                        }}>{hasWorkout ? 'Editar' : 'Montar'}</button>
+                        {hasWorkout && <button className="btn secondary" onClick={() => deleteDay(day.key)}>Limpar</button>}
+                      </div>
+                    </div>
+                  </details>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="grid week">
+              {daysOfWeek.map(day => {
+                const dayPlan = plan[day.key] || { muscles: [], exercises: [] }
+                const hasWorkout = dayPlan.exercises.length > 0
+                return (
+                  <div key={day.key} className="card day-card">
+                    <div className="day-header">
+                      <strong>{day.name}</strong>
+                      <div className="day-meta">
+                        <span className="pill">{dayPlan.exercises.length} exer.</span>
+                        <div className="status-dot" style={{ background: hasWorkout ? '#22c55e' : '#6b7280' }} />
+                      </div>
+                    </div>
+                    <div className="small day-muscles">
+                      {dayPlan.muscles.length
+                        ? dayPlan.muscles.map(m => <span key={m} className="badge">{m}</span>)
+                        : <span className="muted">Descanso</span>}
+                    </div>
+                    <div className="small day-exercises">
+                      {dayPlan.exercises.map((ex,i)=>{
+                        const name = typeof ex === 'string' ? ex : ex.name
+                        const sets = typeof ex === 'string' ? [] : (ex.sets||[])
+                        return (
+                          <div key={i} className="exercise-item" onClick={() => {
+                            const normalized = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? ({ name: ex, sets: [] }) : ex)
+                            setOpenDay(day.key)
+                            setExerciseList(normalized)
+                            setFocusExercise(name)
+                          }}>
+                            • {name}
+                            {sets.length>0 && (
+                              <div className="small" style={{ opacity:.85, marginLeft: 8 }}>
+                                {sets.map((s,si)=> <span key={si}>{si+1}ª: {s.reps}x{s.weight}kg{si<sets.length-1?', ':''}</span>)}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                    <div className="day-actions">
+                      <button className="btn" onClick={() => { 
+                        setOpenDay(day.key); 
+                        const normalized = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? ({ name: ex, sets: [] }) : ex)
+                        setExerciseList(normalized)
+                      }}>{hasWorkout ? 'Editar' : 'Montar'}</button>
+                      {hasWorkout && <button className="btn secondary" onClick={() => deleteDay(day.key)}>Limpar</button>}
                     </div>
                   </div>
-                  <div className="small day-muscles">
-                    {dayPlan.muscles.length
-                      ? dayPlan.muscles.map(m => <span key={m} className="badge">{m}</span>)
-                      : <span className="muted">Descanso</span>}
-                  </div>
-                  <div className="small day-exercises">
-                    {dayPlan.exercises.map((ex,i)=>{
-                      const name = typeof ex === 'string' ? ex : ex.name
-                      const sets = typeof ex === 'string' ? [] : (ex.sets||[])
-                      return (
-                        <div key={i} className="exercise-item" onClick={() => {
-                          const normalized = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? ({ name: ex, sets: [] }) : ex)
-                          setOpenDay(day.key)
-                          setExerciseList(normalized)
-                          setFocusExercise(name)
-                        }}>
-                          • {name}
-                          {sets.length>0 && (
-                            <div className="small" style={{ opacity:.85, marginLeft: 8 }}>
-                              {sets.map((s,si)=> <span key={si}>{si+1}ª: {s.reps}x{s.weight}kg{si<sets.length-1?', ':''}</span>)}
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                  <div className="day-actions">
-                    <button className="btn" onClick={() => { 
-                      setOpenDay(day.key); 
-                      const normalized = (dayPlan.exercises || []).map(ex => typeof ex === 'string' ? ({ name: ex, sets: [] }) : ex)
-                      setExerciseList(normalized)
-                    }}>{hasWorkout ? 'Editar' : 'Montar'}</button>
-                    {hasWorkout && <button className="btn secondary" onClick={() => deleteDay(day.key)}>Limpar</button>}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+          )
         )}
       </main>
 

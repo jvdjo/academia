@@ -86,6 +86,14 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 .day-exercises .exercise-item { cursor: pointer; }
 .day-exercises .exercise-item:hover { opacity: .9; }
 
+/* Accordion list (mobile) */
+.accordion-list{ display:grid; gap:.6rem }
+.day-accordion{ background: var(--card-bg); border:1px solid var(--border); border-radius: 10px; overflow:hidden }
+.day-accordion > summary{ list-style:none; display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; cursor:pointer; }
+.day-accordion > summary::-webkit-details-marker{ display:none }
+.day-acc-right{ display:flex; align-items:center; gap:8px }
+.day-accordion .accordion-body{ padding: .5rem 1rem 1rem; display:grid; gap:.6rem }
+
 /* Theme toggle (login only) */
 .theme-toggle{ position:fixed; top:10px; right:12px; z-index:1000 }
 
@@ -113,11 +121,16 @@ header{ position:sticky; top:0; background:var(--header-bg); backdrop-filter:sat
 @media (max-width: 480px){
 	.container{ padding: .75rem; }
 	header .container{ flex-wrap: wrap; gap:8px; padding-block: 8px; }
-	.grid{ gap: .75rem; }
-	.btn{ padding: .75rem 1rem; }
-	input{ padding: .7rem .8rem; }
-	.day-card{ min-height: 300px; }
-	.day-card .day-exercises{ max-height: 160px; }
+	.grid{ gap: .6rem; }
+	.card{ padding: .75rem; border-radius: 10px; }
+	.btn{ padding: .5rem .75rem; font-size: .9rem; }
+	input{ padding: .55rem .7rem; font-size: .95rem; }
+	.small{ font-size: .8rem; }
+	.pill{ padding: 1px 6px; font-size: .7rem; }
+	.badge{ padding: 1px 6px; font-size: .8rem; }
+	.day-card{ min-height: 260px; }
+	.day-card .day-header strong{ font-size: 1rem; }
+	.day-card .day-exercises{ max-height: 140px; }
 	.day-card .day-actions{ flex-direction: column; }
 	.modal-backdrop{ padding: 0; }
 	.modal{ width:100vw; height:100vh; max-height: 100vh; border-radius: 0; }
