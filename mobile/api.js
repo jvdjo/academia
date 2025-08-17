@@ -47,7 +47,7 @@ export const api = {
       return request('/api/workouts');
     },
     async saveDay(dayKey, payload) {
-      return request(`/api/workouts/${dayKey}`, 'PUT', payload);
+  return request(`/api/workouts/${dayKey}`, 'POST', { ...payload, day: dayKey });
     },
     async deleteDay(dayKey) {
       return request(`/api/workouts/${dayKey}`, 'DELETE');

@@ -1,35 +1,84 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { SafeAreaView, View, Text, TextInput, Pressable, FlatList, Modal, ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaView, View, Text, TextInput, Pressable, FlatList, Modal, ScrollView, StyleSheet, useColorScheme, useWindowDimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from './api';
 
 const daysOfWeek = [
-  { key: 'mon', name: 'Segunda' },
-  { key: 'tue', name: 'Terça' },
-  { key: 'wed', name: 'Quarta' },
-  { key: 'thu', name: 'Quinta' },
-  { key: 'fri', name: 'Sexta' },
-  { key: 'sat', name: 'Sábado' },
-  { key: 'sun', name: 'Domingo' },
+  { key: 'monday', name: 'Segunda' },
+  { key: 'tuesday', name: 'Terça' },
+  { key: 'wednesday', name: 'Quarta' },
+  { key: 'thursday', name: 'Quinta' },
+  { key: 'friday', name: 'Sexta' },
+  { key: 'saturday', name: 'Sábado' },
+  { key: 'sunday', name: 'Domingo' },
 ];
+
+const lightTheme = {
+  bg: '#f8fafc', text:'#111827', muted:'#6b7280', card:'#fff', border:'#e5e7eb', primary:'#2563eb', btnText:'#fff', secondaryBg:'#e5e7eb', secondaryText:'#111827', dotOn:'#22c55e', dotOff:'#6b7280'
+}
+const darkTheme = {
+  bg: '#0f172a', text:'#e5e7eb', muted:'#9ca3af', card:'#111827', border:'#374151', primary:'#3b82f6', btnText:'#fff', secondaryBg:'#374151', secondaryText:'#e5e7eb', dotOn:'#22c55e', dotOff:'#6b7280'
+}
+
+function createStyles(t){
+  return StyleSheet.create({
+    container: { flex:1, backgroundColor:t.bg },
+    containerCenter: { flex:1, alignItems:'center', justifyContent:'center', padding:16, backgroundColor:t.bg },
+    header: { padding:16, borderBottomWidth:1, borderBottomColor:t.border, backgroundColor:t.card, flexDirection:'row', alignItems:'center', justifyContent:'space-between' },
+    card: { backgroundColor:t.card, borderWidth:1, borderColor:t.border, borderRadius:12, padding:12 },
+    h1: { fontSize:24, fontWeight:'700', color:t.text },
+    h2: { fontSize:20, fontWeight:'700', color:t.text },
+    dayCard: { flex: 1, margin: 6 },
+    dayHeader: { flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginBottom:6 },
+    dayTitle: { fontSize:16, fontWeight:'600', color:t.text },
+    dayExercises: { marginTop:6 },
+    statusDot: { width:10, height:10, borderRadius:10 },
+    input: { borderWidth:1, borderColor:t.border, borderRadius:8, paddingHorizontal:10, paddingVertical:10, backgroundColor:t.card, color:t.text, marginTop:4 },
+    label: { fontSize:12, color:t.muted, marginTop:8 },
+    btn: { backgroundColor:t.primary, paddingVertical:10, paddingHorizontal:14, borderRadius:8, alignItems:'center', justifyContent:'center' },
+    btnText: { color:t.btnText, fontWeight:'600' },
+    btnSecondary: { backgroundColor:t.secondaryBg },
+    btnSecondaryText: { color:t.secondaryText },
+    small: { fontSize:12, color:t.text },
+    smallLink: { fontSize:12, color:'#3b82f6', marginTop:8 },
+    muted: { color:t.muted },
+    row: { flexDirection:'row', gap: 8, marginTop: 12 },
+    exItem: { borderWidth:1, borderColor:t.border, borderRadius:8, padding:10, marginBottom:10, backgroundColor:t.card },
+    bold: { fontWeight:'600', color:t.text },
+    setBox: { borderWidth:1, borderColor:t.border, borderRadius:8, padding:10, marginTop:8, backgroundColor:t.card },
+    themeBtn: { marginLeft: 8 }
+  });
+}
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const systemScheme = useColorScheme();
+  const [themeMode, setThemeMode] = useState('light'); // 'light' | 'dark'
+  const theme = themeMode === 'dark' ? darkTheme : lightTheme;
+  const styles = useMemo(()=>createStyles(theme), [theme]);
 
   useEffect(() => {
     (async () => {
       const raw = await AsyncStorage.getItem('academia_pro_user');
       if (raw) setUser(JSON.parse(raw));
+      const t = await AsyncStorage.getItem('academia_theme');
+      if (t === 'light' || t === 'dark') setThemeMode(t);
     })();
   }, []);
 
-  if (!user) return <LoginScreen onAuthenticated={setUser} loading={loading} setLoading={setLoading} />;
-  return <PlannerScreen user={user} onLogout={() => { AsyncStorage.multiRemove(['academia_pro_token','academia_pro_user']); setUser(null); }} />
+  const toggleTheme = async () => {
+    const next = themeMode === 'light' ? 'dark' : 'light';
+    setThemeMode(next);
+    await AsyncStorage.setItem('academia_theme', next);
+  }
+
+  if (!user) return <LoginScreen onAuthenticated={setUser} loading={loading} setLoading={setLoading} styles={styles} theme={theme} onToggleTheme={toggleTheme} themeMode={themeMode} />;
+  return <PlannerScreen user={user} onLogout={() => { AsyncStorage.multiRemove(['academia_pro_token','academia_pro_user']); setUser(null); }} styles={styles} theme={theme} onToggleTheme={toggleTheme} themeMode={themeMode} />
 }
 
-function LoginScreen({ onAuthenticated, loading, setLoading }) {
+function LoginScreen({ onAuthenticated, loading, setLoading, styles, onToggleTheme, themeMode }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
@@ -52,7 +101,10 @@ function LoginScreen({ onAuthenticated, loading, setLoading }) {
   return (
     <SafeAreaView style={styles.containerCenter}>
       <View style={styles.card}>
-        <Text style={styles.h1}>Academia Pro</Text>
+        <View style={{ flexDirection:'row', justifyContent:'space-between', alignItems:'center' }}>
+          <Text style={styles.h1}>Academia Pro</Text>
+          <Pressable onPress={onToggleTheme} style={[styles.btn, styles.btnSecondary, styles.themeBtn]}><Text style={[styles.btnText, styles.btnSecondaryText]}>{themeMode==='light'?'Escuro':'Claro'}</Text></Pressable>
+        </View>
         <Text style={styles.muted}>Entre ou cadastre-se</Text>
         <View style={{ height: 12 }} />
         <Text style={styles.label}>Email</Text>
@@ -66,17 +118,21 @@ function LoginScreen({ onAuthenticated, loading, setLoading }) {
           <Text style={[styles.smallLink]}>{isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entrar'}</Text>
         </Pressable>
       </View>
-      <StatusBar style="auto" />
+      <StatusBar style={themeMode==='dark' ? 'light' : 'dark'} />
     </SafeAreaView>
   );
 }
 
-function PlannerScreen({ user, onLogout }) {
+function PlannerScreen({ user, onLogout, styles, onToggleTheme, themeMode }) {
   const [plan, setPlan] = useState({});
   const [openDay, setOpenDay] = useState(null);
   const [exerciseList, setExerciseList] = useState([]);
   const [allExercises, setAllExercises] = useState([]);
   const [query, setQuery] = useState('');
+  const { width } = useWindowDimensions();
+  const columns = width >= 900 ? 3 : width >= 600 ? 2 : 1;
+  const [savedMap, setSavedMap] = useState({});
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     api.workouts.get().then(res => setPlan(res?.data || {})).catch(e=>alert(e.message));
@@ -106,11 +162,25 @@ function PlannerScreen({ user, onLogout }) {
     if (res?.success) setPlan(({ [dayKey]: _omit, ...rest }) => rest);
   };
 
+  const notify = (msg) => { setToast(msg); setTimeout(()=> setToast(null), 1500); };
+
+  const persistCurrentDay = async () => {
+    if (!openDay) return;
+    const muscles = (plan[openDay]?.muscles) || [];
+    const res = await api.workouts.saveDay(openDay, { muscles, exercises: exerciseList });
+    if (res?.success) {
+      setPlan(p => ({ ...p, [openDay]: { muscles, exercises: exerciseList } }));
+      return true;
+    }
+    return false;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.h2}>Academia Pro</Text>
         <View style={{ flexDirection:'row', alignItems:'center', gap: 8 }}>
+          <Pressable onPress={onToggleTheme} style={[styles.btn, styles.btnSecondary]}><Text style={[styles.btnText, styles.btnSecondaryText]}>{themeMode==='light'?'Escuro':'Claro'}</Text></Pressable>
           <Text style={styles.muted}>{user?.email}</Text>
           <Pressable onPress={onLogout} style={[styles.btn, styles.btnSecondary]}><Text style={[styles.btnText, styles.btnSecondaryText]}>Sair</Text></Pressable>
         </View>
@@ -120,7 +190,8 @@ function PlannerScreen({ user, onLogout }) {
         contentContainerStyle={{ padding: 16, gap: 12 }}
         data={daysOfWeek}
         keyExtractor={i=>i.key}
-        numColumns={2}
+        numColumns={columns}
+        columnWrapperStyle={columns>1 ? { gap: 12 } : undefined}
         renderItem={({ item }) => {
           const dayPlan = plan[item.key] || { muscles: [], exercises: [] };
           const hasWorkout = (dayPlan.exercises || []).length > 0;
@@ -202,9 +273,25 @@ function PlannerScreen({ user, onLogout }) {
                       </View>
                     </View>
                   ))}
-                  <Pressable onPress={() => setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: [...(it.sets||[]), { reps: 0, weight: 0 }] } : it))} style={[styles.btn, { alignSelf:'flex-start' }]}>
-                    <Text style={styles.btnText}>Adicionar série</Text>
-                  </Pressable>
+                  <View style={{ flexDirection:'row', gap:8 }}>
+                    <Pressable onPress={() => setExerciseList(list => list.map((it,i)=> i===idx ? { ...it, sets: [...(it.sets||[]), { reps: 0, weight: 0 }] } : it))} style={[styles.btn, { alignSelf:'flex-start', flex:1 }]}>
+                      <Text style={styles.btnText}>Adicionar série</Text>
+                    </Pressable>
+                    <Pressable onPress={async () => {
+                      const ok = await persistCurrentDay().catch(()=>false);
+                      if (ok) {
+                        setSavedMap(m=>({ ...m, [ex.name]: Date.now() }));
+                        notify('Exercício salvo');
+                      } else {
+                        notify('Falha ao salvar');
+                      }
+                    }} style={[styles.btn, styles.btnSecondary, { alignSelf:'flex-start', flex:1 }]}>
+                      <Text style={[styles.btnText, styles.btnSecondaryText]}>Salvar exercício</Text>
+                    </Pressable>
+                  </View>
+                  {savedMap[ex.name] && (
+                    <Text style={[styles.small, styles.muted]}>Salvo</Text>
+                  )}
                 </View>
               ))}
             </ScrollView>
@@ -217,34 +304,13 @@ function PlannerScreen({ user, onLogout }) {
         </SafeAreaView>
       </Modal>
 
-      <StatusBar style="auto" />
+  {toast && (
+    <View style={{ position:'absolute', bottom:20, left:16, right:16, padding:12, borderRadius:8, backgroundColor: themeMode==='dark' ? '#1f2937' : '#111827' }}>
+      <Text style={{ color:'#fff', textAlign:'center' }}>{toast}</Text>
+    </View>
+  )}
+  <StatusBar style={themeMode==='dark' ? 'light' : 'dark'} />
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex:1, backgroundColor:'#f8fafc' },
-  containerCenter: { flex:1, alignItems:'center', justifyContent:'center', padding:16, backgroundColor:'#f8fafc' },
-  header: { padding:16, borderBottomWidth:1, borderBottomColor:'#e5e7eb', backgroundColor:'#fff', flexDirection:'row', alignItems:'center', justifyContent:'space-between' },
-  card: { backgroundColor:'#fff', borderWidth:1, borderColor:'#e5e7eb', borderRadius:12, padding:12 },
-  h1: { fontSize:24, fontWeight:'700' },
-  h2: { fontSize:20, fontWeight:'700' },
-  dayCard: { width: '48%', margin: '1%' },
-  dayHeader: { flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginBottom:6 },
-  dayTitle: { fontSize:16, fontWeight:'600' },
-  dayExercises: { marginTop:6 },
-  statusDot: { width:10, height:10, borderRadius:10 },
-  input: { borderWidth:1, borderColor:'#d1d5db', borderRadius:8, paddingHorizontal:10, paddingVertical:10, backgroundColor:'#fff', marginTop:4 },
-  label: { fontSize:12, color:'#6b7280', marginTop:8 },
-  btn: { backgroundColor:'#2563eb', paddingVertical:10, paddingHorizontal:14, borderRadius:8, alignItems:'center', justifyContent:'center' },
-  btnText: { color:'#fff', fontWeight:'600' },
-  btnSecondary: { backgroundColor:'#e5e7eb' },
-  btnSecondaryText: { color:'#111827' },
-  small: { fontSize:12, color:'#374151' },
-  smallLink: { fontSize:12, color:'#2563eb', marginTop:8 },
-  muted: { color:'#6b7280' },
-  row: { flexDirection:'row', gap: 8, marginTop: 12 },
-  exItem: { borderWidth:1, borderColor:'#e5e7eb', borderRadius:8, padding:10, marginBottom:10 },
-  bold: { fontWeight:'600' },
-  setBox: { borderWidth:1, borderColor:'#e5e7eb', borderRadius:8, padding:10, marginTop:8 },
-});

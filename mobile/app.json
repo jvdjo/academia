@@ -4,17 +4,13 @@
     "slug": "academia-pro",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": { "fallbackToCacheTimeout": 0 },
+  "icon": "",
+  "splash": { },
+  "updates": { },
     "assetBundlePatterns": ["**/*"],
-    "ios": { "supportsTablet": true },
-    "android": { "adaptiveIcon": { "foregroundImage": "./assets/adaptive-icon.png", "backgroundColor": "#ffffff" } },
-    "web": { "bundler": "metro", "favicon": "./assets/favicon.png" },
+  "ios": { "supportsTablet": true },
+  "android": { },
+  "web": { "bundler": "metro" },
     "extra": {
       "apiUrl": "${EXPO_PUBLIC_API_URL}" 
     }
